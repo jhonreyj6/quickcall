@@ -9,7 +9,7 @@ const Login = () => {
 
   return (
     <View className="flex-1 justify-center p-6">
-      <View className="p-8 rounded-lg bg-sky-950 border">
+      <View className="p-8 rounded-xl bg-sky-950 border">
         <Text className="text-white text-3xl font-bold mb-4 text-center">Create an Account</Text>
         <TextInput
           className="bg-white rounded-xl px-4 py-3 mb-3"

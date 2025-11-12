@@ -1,11 +1,11 @@
 import { Text, View } from "react-native";
 
-const recent = () => {
+const Account = () => {
   return (
     <View>
-      <Text>recent</Text>
+      <Text>profile</Text>
     </View>
   );
 };
 
-export default recent;
+export default Account;
