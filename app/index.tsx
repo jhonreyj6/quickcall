@@ -17,6 +17,10 @@ export default function HomeScreen() {
       className="flex-1"
     >
       <ScrollView className="p-12 flex-1" showsVerticalScrollIndicator={false}>
+        <Link href={"/dialer"} className="bg-blue-500 text-white text-xl rounded-xl py-3 text-center">
+          Dialer
+        </Link>
+
         <View className="border p-2 rounded-full bg-sky-950 mb-8">
           <Text className="text-blue-500 text-center">Truster by 10,000 Users Worldwide</Text>
         </View>
@@ -79,7 +83,7 @@ export default function HomeScreen() {
 
         <View className="p-4 border rounded-xl bg-sky-950 mb-4">
           <FontAwesome6
-            name="clock-o"
+            name="clock"
             size={24}
             color="white"
             className="p-2 border rounded-lg bg-sky-500 w-12 text-center mb-4"
@@ -178,9 +182,6 @@ export default function HomeScreen() {
           </Link>
           <Link href={"/register"} className="bg-blue-500 text-white text-xl rounded-xl py-3 text-center">
             Register
-          </Link>
-          <Link href={"/dialer"} className="bg-blue-500 text-white text-xl rounded-xl py-3 text-center mb-24">
-            Dialer
           </Link>
         </View>
       </ScrollView>
