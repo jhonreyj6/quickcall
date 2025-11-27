@@ -22,7 +22,7 @@ export default function HomeScreen() {
         </Link>
 
         <View className="border p-2 rounded-full bg-sky-950 mb-8">
-          <Text className="text-blue-500 text-center">Truster by 10,000 Users Worldwide</Text>
+          <Text className="text-blue-500 text-center">Trusted by 10,000 Users Worldwide</Text>
         </View>
         <Text className="text-3xl font-bold text-white text-center">Connect Globally,</Text>
         <Text className="text-3xl text-center text-white mb-4">Communicate Seamlessly</Text>
@@ -39,7 +39,7 @@ export default function HomeScreen() {
             className="p-2 border rounded-lg bg-emerald-500 w-12 text-center mb-4"
           />
           <Text className="text-white text-lg mb-2">200+ Countries</Text>
-          <Text className="text-gray-400">Make calls to virtually anywhere in the world with our global network.</Text>
+          <Text className="text-gray-500">Make calls to virtually anywhere in the world with our global network.</Text>
         </View>
 
         <View className="p-4 border rounded-xl bg-sky-950 mb-4">
@@ -50,7 +50,7 @@ export default function HomeScreen() {
             className="p-2 border rounded-lg bg-sky-500 w-12 text-center mb-4"
           />
           <Text className="text-white text-lg mb-2">HD Voice Quality</Text>
-          <Text className="text-gray-400">
+          <Text className="text-gray-500">
             With HD Voice Quality, your calls are clearer and more natural than ever before.
           </Text>
         </View>
@@ -63,7 +63,7 @@ export default function HomeScreen() {
             className="p-2 border rounded-lg bg-blue-700 w-12 text-center mb-4"
           />
           <Text className="text-white text-lg mb-2">Secure and Private</Text>
-          <Text className="text-gray-400">End to end encryption keeps all your conversation private.</Text>
+          <Text className="text-gray-500">End to end encryption keeps all your conversation private.</Text>
         </View>
       </ScrollView>
 
@@ -76,7 +76,7 @@ export default function HomeScreen() {
             className="p-2 border rounded-lg bg-emerald-500 w-12 text-center mb-4"
           />
           <Text className="text-white text-lg mb-2">Affordable Rates</Text>
-          <Text className="text-gray-400">
+          <Text className="text-gray-500">
             Enjoy competitive international calling rates without any hidden fees or surprise charges.
           </Text>
         </View>
@@ -89,7 +89,7 @@ export default function HomeScreen() {
             className="p-2 border rounded-lg bg-sky-500 w-12 text-center mb-4"
           />
           <Text className="text-white text-lg mb-2">24/7 Availability</Text>
-          <Text className="text-gray-400">
+          <Text className="text-gray-500">
             Call anytime, anywhere with our reliable global network that never sleeps.
           </Text>
         </View>
@@ -102,7 +102,7 @@ export default function HomeScreen() {
             className="p-2 border rounded-lg bg-blue-700 w-12 text-center mb-4"
           />
           <Text className="text-white text-lg mb-2">Multi-Platform</Text>
-          <Text className="text-gray-400">
+          <Text className="text-gray-500">
             Access our services on any device, whether it is your smartphone, tablet, or computer.
           </Text>
         </View>
@@ -115,7 +115,7 @@ export default function HomeScreen() {
             className="p-2 border rounded-lg bg-blue-700 w-12 text-center mb-4"
           />
           <Text className="text-white text-lg mb-2">Customer Support</Text>
-          <Text className="text-gray-400">
+          <Text className="text-gray-500">
             Get help whenever you need it with our dedicated 24/7 customer support team
           </Text>
         </View>

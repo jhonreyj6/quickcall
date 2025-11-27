@@ -1,38 +1,120 @@
 import SocialButton from "@/components/SocialButton";
-import { Link } from "expo-router";
+import useAuthStore from "@/stores/authStore";
+import { Link, router } from "expo-router";
 import { useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 
 const Register = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const initForm = {
+    name: "",
+    email: "",
+    password: "",
+    confirm_password: "",
+  };
+
+  const [form, setForm] = useState(initForm);
+
+  const [formErrorMessage, setFormErrorMessage] = useState(initForm);
+
+  //
+  const login = useAuthStore((state) => state.login);
+  const user = useAuthStore((state) => state.user);
+
+  const register = async () => {
+    try {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        login(data);
+        router.push("/dialer");
+      } else {
+        setFormErrorMessage((prevState) => ({
+          ...prevState,
+          name: data.name,
+          email: data.email,
+          password: data.password,
+          confirm_password: data.confirm_password,
+        }));
+      }
+    } catch (error) {
+      console.log("ERROR:", error);
+    }
+  };
 
   return (
     <View className="flex-1 justify-center p-6">
       <View className="p-8 rounded-lg bg-sky-950 border">
         <Text className="text-white text-3xl font-bold mb-4 text-center">Create an Account</Text>
-        <TextInput
-          className="bg-white rounded-xl px-4 py-3 mb-3"
-          placeholder="Name"
-          value={name}
-          onChangeText={setName}
-        />
-        <TextInput
-          className="bg-white rounded-xl px-4 py-3 mb-3"
-          placeholder="Email"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-        />
-        <TextInput
-          className="bg-white rounded-xl px-4 py-3 mb-6"
-          placeholder="Password"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
-        <TouchableOpacity className="bg-white rounded-xl py-3 mb-4">
+        <View className="mb-3">
+          <TextInput
+            className="bg-white rounded-xl px-4 py-3"
+            placeholder="Name"
+            value={form.name}
+            onChangeText={(v) => {
+              setForm((prevState) => ({
+                ...prevState,
+                name: v,
+              }));
+            }}
+          />
+          {formErrorMessage.name && <Text className="text-danger ml-4 mt-1">{formErrorMessage.name}</Text>}
+        </View>
+        <View className="mb-3">
+          <TextInput
+            className="bg-white rounded-xl px-4 py-3"
+            placeholder="Email"
+            keyboardType="email-address"
+            value={form.email}
+            onChangeText={(v) => {
+              setForm((prevState) => ({
+                ...prevState,
+                email: v,
+              }));
+            }}
+          />
+          {formErrorMessage.email && <Text className="text-danger ml-4 mt-1">{formErrorMessage.email}</Text>}
+        </View>
+        <View className="mb-3">
+          <TextInput
+            className="bg-white rounded-xl px-4 py-3"
+            placeholder="Password"
+            secureTextEntry
+            value={form.password}
+            onChangeText={(v) => {
+              setForm((prevState) => ({
+                ...prevState,
+                password: v,
+              }));
+            }}
+          />
+          {formErrorMessage.password && <Text className="text-danger ml-4 mt-1">{formErrorMessage.password}</Text>}
+        </View>
+        <View className="mb-6">
+          <TextInput
+            className="bg-white rounded-xl px-4 py-3"
+            placeholder="Confirn password"
+            secureTextEntry
+            value={form.confirm_password}
+            onChangeText={(v) => {
+              setForm((prevState) => ({
+                ...prevState,
+                confirm_password: v,
+              }));
+            }}
+          />
+          {formErrorMessage.confirm_password && (
+            <Text className="text-danger ml-4 mt-1">{formErrorMessage.confirm_password}</Text>
+          )}
+        </View>
+        <TouchableOpacity className="bg-white rounded-xl py-3 mb-4" onPress={() => register()}>
           <Text className="text-center text-green-600 font-semibold">Register</Text>
         </TouchableOpacity>
         <Link href={"/login"} className="mb-8">

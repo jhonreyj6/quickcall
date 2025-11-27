@@ -3,27 +3,26 @@ import { Tabs } from "expo-router";
 import React from "react";
 import { View } from "react-native";
 
-const TabIcon = ({ name, focused, title }) => {
+const TabIcon = ({ focused, icon }) => {
   return (
     <View className="items-center">
-      <FontAwesome6
-        name={name}
-        size={24}
-        color={focused ? "#2563eb" : "#64748b"} // blue-600 : slate-500
-      />
+      <FontAwesome6 name={icon} size={24} color={focused ? "white" : "gray"} />
       {/* <Text className={`text-xs mt-1 w-10 text-center ${focused ? "text-blue-600" : "text-slate-500"}`}>{title}</Text> */}
     </View>
   );
 };
 
 const TabLayout = () => {
-  const isLoggedIn = false; // change to true to test logged-in tabs
-
   const userTabs = [
-    { name: "dialer", title: "Dialer", icon: "phone" },
-    // { name: "recent", title: "Recent", icon: "clock-o" },
-    { name: "contact", title: "Contact", icon: "address-book" },
-    { name: "account", title: "Account", icon: "user" },
+    { name: "dialer", title: "Dialer", icon: "phone", showTab: true },
+    { name: "contact", title: "Contact", icon: "address-book", showTab: true },
+    { name: "account", title: "Account", icon: "user", showTab: true },
+    { name: "profile", title: "Profile", icon: "user", showTab: false },
+    { name: "saved/payment", title: "SavedPayment", icon: "", showTab: false },
+    { name: "notification", title: "Notification", icon: "", showTab: false },
+    { name: "pricing", title: "Buy Credit", icon: "", showTab: false },
+    { name: "create/payment", title: "Create Payment", icon: "", showTab: false },
+    // { name: "create/layout", title: "Payment Layout", icon: "", showTab: false },
   ];
 
   return (
@@ -54,16 +53,31 @@ const TabLayout = () => {
           },
         }}
       >
-        {userTabs.map((tab) => (
-          <Tabs.Screen
-            key={tab.name}
-            name={tab.name}
-            options={{
-              headerShown: false,
-              tabBarIcon: ({ focused }) => <TabIcon name={tab.icon} title={tab.title} focused={focused} />,
-            }}
-          />
-        ))}
+        {userTabs.map((tab) => {
+          if (tab.showTab === true) {
+            return (
+              <Tabs.Screen
+                key={tab.name}
+                name={tab.name}
+                options={{
+                  headerShown: false,
+                  tabBarIcon: ({ focused }) => <TabIcon focused={focused} icon={tab.icon} />,
+                }}
+              />
+            );
+          } else {
+            return (
+              <Tabs.Screen
+                name={tab.name}
+                options={{
+                  href: null,
+                  headerShown: false,
+                }}
+                key={tab.name}
+              />
+            );
+          }
+        })}
       </Tabs>
     </View>
   );
