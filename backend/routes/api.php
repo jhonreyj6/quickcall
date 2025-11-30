@@ -18,7 +18,7 @@ Route::group(['prefix' => 'auth', 'namespace' => 'App\Http\Controllers'], functi
 
 Route::group(['prefix' => 'recent', 'middleware' => ['auth:api'], 'namespace' => 'App\Http\Controllers'], function ($router) {
     Route::get('/', 'RecentController@index');
-    Route::post('/', 'RecentController@store');
+    // Route::post('/', 'RecentController@store');
 });
 
 Route::group(['prefix' => 'contact', 'middleware' => ['auth:api'], 'namespace' => 'App\Http\Controllers'], function ($router) {

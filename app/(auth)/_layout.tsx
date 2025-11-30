@@ -18,7 +18,6 @@ const TabIcon = ({ focused, icon }) => {
   return (
     <View className="items-center">
       <FontAwesome6 name={icon} size={24} color={focused ? "white" : "gray"} />
-      {/* <Text className={`text-xs mt-1 w-10 text-center ${focused ? "text-blue-600" : "text-slate-500"}`}>{title}</Text> */}
     </View>
   );
 };

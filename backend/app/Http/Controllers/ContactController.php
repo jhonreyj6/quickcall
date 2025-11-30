@@ -14,7 +14,7 @@ class ContactController extends Controller
         return response()->json($contacts, 200);
     }
 
-    public function favorite()
+    public function favorite(Request $request)
     {
         $contacts = Contact::where([
             'user_id'  => auth()->id(),
@@ -49,8 +49,8 @@ class ContactController extends Controller
         foreach ($request->input('data') as $data) {
             $contacts = Contact::create([
                 'user_id'      => auth()->id(),
-                'name'         => $request->input('name'),
-                'phone_number' => $request->input('phone_number'),
+                'name'         => $data->name,
+                'phone_number' => $data->phone_number,
                 'favorite'     => 0,
             ]);
         }
