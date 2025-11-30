@@ -43,6 +43,7 @@ const Register = () => {
           password: data.password,
           confirm_password: data.confirm_password,
         }));
+        console.log(response);
       }
     } catch (error) {
       console.log("ERROR:", error);

@@ -1,9 +1,11 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\UserCreditPayment;
 use Auth;
 use Illuminate\Http\Request;
 use Stripe\PaymentIntent;
+use Stripe\PaymentMethod;
 use Stripe\Stripe;
 
 class StripeController extends Controller
@@ -14,11 +16,9 @@ class StripeController extends Controller
         Stripe::setApiKey(env('STRIPE_SECRET'));
 
         try {
-            $user = Auth::user(); // Make sure user is logged in
-
-            // Create PaymentIntent for $10 (1000 cents)
+            $user          = Auth::user();
             $paymentIntent = PaymentIntent::create([
-                'amount'                    => 1000,
+                'amount'                    => 4000,
                 'currency'                  => 'usd',
                 'automatic_payment_methods' => [
                     'enabled'         => true,
@@ -30,8 +30,8 @@ class StripeController extends Controller
             ]);
 
             return response()->json([
-                'clientSecret' => $paymentIntent->client_secret,
-                // 'payment_intent_id'           => $paymentIntent->id,
+                'client_secret'     => $paymentIntent->client_secret,
+                'payment_intent_id' => $paymentIntent->id,
             ]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
@@ -41,19 +41,31 @@ class StripeController extends Controller
     public function confirmPayment(Request $request)
     {
         Stripe::setApiKey(env('STRIPE_SECRET'));
-        $piId = explode('_secret_', $request->client_secret)[0];
-        try {
+        $paymentIntent = PaymentIntent::retrieve($request->input('payment_intent_id'));
+        // for saving pm
+        $paymentMethodId = $paymentIntent->payment_method;
+        $paymentMethod   = PaymentMethod::retrieve($paymentMethodId);
 
-            $paymentIntent = PaymentIntent::retrieve($piId);
-            if ($paymentIntent->status === 'succeeded') {
-                // Payment is successful, fulfill the order
-                return response()->json(['success' => true, 'message' => 'Payment confirmed!']);
+        if ($paymentIntent->status === 'succeeded') {
+            $existing = UserCreditPayment::where('stripe_payment_intent_id', $paymentIntent->id)->first();
+
+            if ($existing) {
+                return response()->json(['success' => false, 'messsage' => 'Transaction already exist!'], 409);
+            } else {
+                UserCreditPayment::create([
+                    'user_id'                  => $request->user()->id,
+                    'stripe_payment_intent_id' => $request->input('payment_intent_id'),
+                ]);
+                $request->user()->increment('credit_balance', $paymentIntent->amount_received / 100);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Payment confirmed!',
+                    'user'    => auth()->user(),
+                ],
+                    201);
             }
-
-            return response()->json(['success' => false, 'status' => $paymentIntent->status]);
-
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 400);
         }
     }
+
 }

@@ -15,12 +15,8 @@ const Account = () => {
       token: auth.access_token,
     });
 
-    if (res.ok) {
-      auth.logout();
-      router.replace("/login");
-    } else {
-      alert("Failed to logout");
-    }
+    auth.logout();
+    router.replace("/login");
   };
 
   return (
@@ -40,7 +36,7 @@ const Account = () => {
             <Text className="text-gray-500 text-xs mb-1.5">{auth.user.email}</Text>
             <View className="flex-row gap-3 items-center">
               <FontAwesome6 name="dollar" color="yellowgreen" size={16} />
-              <Text className="text-blue-500 text-lg mt-auto">10.00</Text>
+              <Text className="text-blue-500 text-lg mt-auto">{auth.user.credit_balance}</Text>
             </View>
           </View>
         </View>
@@ -49,7 +45,7 @@ const Account = () => {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View className="mb-4">
           <Text className="mb-2 text-gray-500">Account</Text>
-          <View className="flex-col gap-2">
+          <View className="flex-col gap-4">
             <Pressable
               className="p-4 flex rounded-xl bg-secondary flex-row gap-4 items-center"
               onPress={() => {

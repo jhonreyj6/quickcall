@@ -26,7 +26,7 @@ const Login = () => {
 
     if (response.ok) {
       storeLogin(data);
-      router.push("/dialer");
+      router.replace("/dialer");
     } else {
       alert(data.error);
     }
@@ -65,7 +65,7 @@ const Login = () => {
           />
         </View>
 
-        <TouchableOpacity className="bg-white rounded-xl py-3 mb-2" onPress={() => authenticate()}>
+        <TouchableOpacity className="bg-white rounded-xl py-3 mb-6" onPress={() => authenticate()}>
           <Text className="text-center text-green-600 font-semibold">Login</Text>
         </TouchableOpacity>
 
@@ -74,6 +74,10 @@ const Login = () => {
         </Link>
 
         <SocialButton />
+
+        <Link href={"/"} className="text-white">
+          Home
+        </Link>
       </View>
     </View>
   );

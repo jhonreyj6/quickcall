@@ -1,9 +1,20 @@
+import useAuthStore from "@/stores/authStore";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Tabs } from "expo-router";
-import React from "react";
+import { useIsFocused } from "@react-navigation/native";
+import { router, Tabs } from "expo-router";
+import React, { useEffect } from "react";
 import { View } from "react-native";
 
 const TabIcon = ({ focused, icon }) => {
+  const auth = useAuthStore((state) => state);
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused && !auth.isAuthenticated) {
+      router.replace("/login");
+    }
+  }, [isFocused, auth]);
+
   return (
     <View className="items-center">
       <FontAwesome6 name={icon} size={24} color={focused ? "white" : "gray"} />
@@ -21,8 +32,8 @@ const TabLayout = () => {
     { name: "saved/payment", title: "SavedPayment", icon: "", showTab: false },
     { name: "notification", title: "Notification", icon: "", showTab: false },
     { name: "pricing", title: "Buy Credit", icon: "", showTab: false },
-    { name: "create/payment", title: "Create Payment", icon: "", showTab: false },
-    // { name: "create/layout", title: "Payment Layout", icon: "", showTab: false },
+    { name: "payment/checkout", title: "Create Payment", icon: "", showTab: false },
+    { name: "payment/confirm", title: "Confirm Payment", icon: "", showTab: false },
   ];
 
   return (

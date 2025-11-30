@@ -33,7 +33,7 @@ const Pricing = () => {
             <Text className="text-3xl text-center text-white">$10.00</Text>
           </View>
           <Link
-            href={"/create/payment?plan=starter"}
+            href={"/payment/checkout?plan=starter"}
             className="text-center text-white bg-blue-500 border-0 py-3 px-6 rounded-xl text-lg mb-12"
           >
             Buy now
@@ -56,7 +56,7 @@ const Pricing = () => {
             <Text className="text-3xl text-center text-white">$20.00</Text>
           </View>
           <Link
-            href={"/create/payment?plan=advance"}
+            href={"/payment/checkout?plan=advance"}
             className="text-center text-white bg-primary border-0 py-3 px-6 rounded-xl text-lg mb-12"
           >
             Buy now
