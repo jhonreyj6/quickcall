@@ -4,7 +4,7 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 
 const Pricing = () => {
   return (
-    <ScrollView className="flex-1 mb-8">
+    <ScrollView className="flex-1">
       <View className="flex-col gap-4">
         <View className="rounded-xl bg-secondary p-6">
           <Text className="text-2xl text-white mb-2 text-center">Free</Text>
@@ -73,7 +73,7 @@ const Pricing = () => {
           </View>
         </View>
 
-        <View className="items-center">
+        <View className="items-center mb-8">
           <Text className="text-gray-500">Need a custom plan?</Text>
           <Link href={"/"}>
             <Text className="text-blue-500 text-lg">Contact our sales team.</Text>

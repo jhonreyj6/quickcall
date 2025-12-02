@@ -9,7 +9,7 @@ class ContactController extends Controller
 {
     public function index()
     {
-        $contacts = Contact::where('user_id', auth()->id())->orderBy('name', 'asc')->paginate(12);
+        $contacts = Contact::where(['user_id' => auth()->id(), 'favorite' => 0])->orderBy('name', 'asc')->paginate(12);
 
         return response()->json($contacts, 200);
     }
@@ -56,6 +56,12 @@ class ContactController extends Controller
         }
 
         return response()->json($contacts, 200);
+    }
+
+    public function importContact(Request $request)
+    {
+
+        return response()->json($request->all(), 200);
     }
 
 }

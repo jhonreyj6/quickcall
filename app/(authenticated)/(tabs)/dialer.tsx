@@ -4,7 +4,7 @@ import { apiRequest } from "@/utils/apiRequest";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Audio } from "expo-av";
 import { useEffect, useRef, useState } from "react";
-import { Modal, Pressable, ScrollView, Text, View } from "react-native";
+import { FlatList, Modal, Pressable, ScrollView, Text, View } from "react-native";
 
 const Dialer = () => {
   const [formDial, setFormDial] = useState<string | null>(null);
@@ -116,7 +116,7 @@ const Dialer = () => {
 
   return (
     <>
-      <View className="flex-1 mx-4 mb-4">
+      <View className="flex-1 mx-4">
         <Text className="text-white mb-3 text-2xl">Recent Calls</Text>
         <Text className="text-gray-500 mb-4">6 calls this week</Text>
         <View className="flex-row gap-4 items-center mb-8">
@@ -134,16 +134,25 @@ const Dialer = () => {
           </View>
         </View>
 
-        <ScrollView contentContainerClassName="flex-col gap-4">
+        {/* <ScrollView contentContainerClassName="flex-col gap-4 pb-8">
           {recentCalls.data.length > 0 &&
             recentCalls.data.map((caller, index) => {
               return <ContactInfoCard key={index} caller={caller} />;
             })}
-        </ScrollView>
+        </ScrollView> */}
+
+        <FlatList
+          data={recentCalls.data}
+          keyExtractor={(item, index) => index.toString()} // ideally use a unique ID if available
+          renderItem={({ item }) => <ContactInfoCard caller={item} />}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 32, flexDirection: "column", gap: 16 }} // pb-8 -> 32px, gap-4 -> 16px
+          ListEmptyComponent={null} // optional, shows nothing if empty
+        />
 
         {modalVisible === false && (
           <Pressable
-            className="absolute bottom-2 right-0 z-50 p-4 rounded-lg bg-secondary"
+            className="absolute bottom-10 right-0 z-50 p-4 rounded-lg bg-secondary"
             onPress={() => setModalVisible(true)}
           >
             <FontAwesome6 name="minimize" size={32} color="white" />
@@ -158,12 +167,26 @@ const Dialer = () => {
         onRequestClose={() => setModalVisible(false)}
       >
         <View className="px-4 flex-1 bg-primary">
-          <ScrollView contentContainerClassName="gap-2 flex-col" showsVerticalScrollIndicator={false}>
+          {/* <ScrollView contentContainerClassName="gap-2 flex-col" showsVerticalScrollIndicator={false}>
             {recentCalls.data.length &&
               recentCalls.data.map((caller, index) => {
                 return <ContactInfoCard key={index} caller={caller} />;
               })}
-          </ScrollView>
+          </ScrollView> */}
+
+          <FlatList
+            data={recentCalls.data} // your array
+            keyExtractor={(item, index) => index.toString()} // ideally use a unique id if available
+            renderItem={({ item }) => <ContactInfoCard caller={item} />}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ gap: 8, flexDirection: "column", paddingVertical: 8 }} // replace Tailwind gap-2
+            ListEmptyComponent={() => (
+              <View>
+                <Text>No recent calls</Text>
+              </View>
+            )}
+          />
+
           <View className="py-4">
             <View className="flex-row border rounded-xl bg-sky-950 h-24 items-center justify-center mb-4">
               <View className="w-full px-8 pe-24">

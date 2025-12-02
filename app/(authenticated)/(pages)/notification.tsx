@@ -1,4 +1,3 @@
-import { Link } from "expo-router";
 import { useState } from "react";
 import { Switch, Text, View } from "react-native";
 
@@ -89,10 +88,6 @@ const Notification = () => {
           </View>
         </View>
       </View>
-
-      <Link href={"/account"} className=" bg-blue-500 border-0 text-center p-4 rounded-xl text-lg mt-auto">
-        <Text className="text-white">Go to Account</Text>
-      </Link>
     </View>
   );
 };

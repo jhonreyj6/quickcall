@@ -13,40 +13,52 @@ const Register = () => {
   };
 
   const [form, setForm] = useState(initForm);
-
-  const [formErrorMessage, setFormErrorMessage] = useState(initForm);
-
-  //
   const login = useAuthStore((state) => state.login);
   const user = useAuthStore((state) => state.user);
 
   const register = async () => {
-    try {
-      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
+    const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/auth/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(form),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
+    if (response.ok) {
+      login(data);
+      router.push("/dialer");
+    } else {
+      switch (Object.keys(data)[0]) {
+        case "email":
+          alert(data.email);
+          break;
 
-      if (response.ok) {
-        login(data);
-        router.push("/dialer");
-      } else {
-        setFormErrorMessage((prevState) => ({
-          ...prevState,
-          name: data.name,
-          email: data.email,
-          password: data.password,
-          confirm_password: data.confirm_password,
-        }));
-        console.log(response);
+        case "name":
+          alert(data.name);
+          break;
+
+        case "password":
+          alert(data.password);
+          break;
+
+        case "confirm_password":
+          alert(data.confirm_password);
+          break;
+
+        case "message":
+          alert(data.message);
+          break;
+
+        case "error":
+          alert(data.error);
+          break;
+
+        default:
+          alert("Something went wrong!");
+          break;
       }
-    } catch (error) {
-      console.log("ERROR:", error);
     }
   };
 
@@ -66,7 +78,6 @@ const Register = () => {
               }));
             }}
           />
-          {formErrorMessage.name && <Text className="text-danger ml-4 mt-1">{formErrorMessage.name}</Text>}
         </View>
         <View className="mb-3">
           <TextInput
@@ -81,7 +92,6 @@ const Register = () => {
               }));
             }}
           />
-          {formErrorMessage.email && <Text className="text-danger ml-4 mt-1">{formErrorMessage.email}</Text>}
         </View>
         <View className="mb-3">
           <TextInput
@@ -96,7 +106,6 @@ const Register = () => {
               }));
             }}
           />
-          {formErrorMessage.password && <Text className="text-danger ml-4 mt-1">{formErrorMessage.password}</Text>}
         </View>
         <View className="mb-6">
           <TextInput
@@ -111,9 +120,6 @@ const Register = () => {
               }));
             }}
           />
-          {formErrorMessage.confirm_password && (
-            <Text className="text-danger ml-4 mt-1">{formErrorMessage.confirm_password}</Text>
-          )}
         </View>
         <TouchableOpacity className="bg-white rounded-xl py-3 mb-4" onPress={() => register()}>
           <Text className="text-center text-green-600 font-semibold">Register</Text>

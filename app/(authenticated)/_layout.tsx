@@ -1,19 +1,19 @@
 import useAuthStore from "@/stores/authStore";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useIsFocused } from "@react-navigation/native";
-import { router, Tabs } from "expo-router";
-import React, { useEffect } from "react";
+import { Tabs } from "expo-router";
+import React from "react";
 import { View } from "react-native";
 
 const TabIcon = ({ focused, icon }) => {
   const auth = useAuthStore((state) => state);
   const isFocused = useIsFocused();
 
-  useEffect(() => {
-    if (isFocused && !auth.isAuthenticated) {
-      router.replace("/login");
-    }
-  }, [isFocused, auth]);
+  // useEffect(() => {
+  //   if (isFocused && !auth.isAuthenticated) {
+  //     router.replace("/login");
+  //   }
+  // }, [isFocused, auth]);
 
   return (
     <View className="items-center">
@@ -24,15 +24,15 @@ const TabIcon = ({ focused, icon }) => {
 
 const TabLayout = () => {
   const userTabs = [
-    { name: "dialer", title: "Dialer", icon: "phone", showTab: true },
-    { name: "contact", title: "Contact", icon: "address-book", showTab: true },
-    { name: "account", title: "Account", icon: "user", showTab: true },
-    { name: "profile", title: "Profile", icon: "user", showTab: false },
-    { name: "saved/payment", title: "SavedPayment", icon: "", showTab: false },
-    { name: "notification", title: "Notification", icon: "", showTab: false },
-    { name: "pricing", title: "Buy Credit", icon: "", showTab: false },
-    { name: "payment/checkout", title: "Create Payment", icon: "", showTab: false },
-    { name: "payment/confirm", title: "Confirm Payment", icon: "", showTab: false },
+    { name: "(tabs)/dialer", title: "Dialer", icon: "phone", showTab: true },
+    { name: "(tabs)/contact", title: "Contact", icon: "address-book", showTab: true },
+    { name: "(tabs)/account", title: "Account", icon: "user", showTab: true },
+    { name: "(pages)/saved/payment", title: "SavedPayment", icon: "", showTab: false },
+    { name: "(pages)/profile", title: "Notification", icon: "", showTab: false },
+    { name: "(pages)/notification", title: "Notification", icon: "", showTab: false },
+    { name: "(pages)/pricing", title: "Buy Credit", icon: "", showTab: false },
+    { name: "(pages)/payment/checkout", title: "Create Payment", icon: "", showTab: false },
+    { name: "(pages)/payment/confirm", title: "Confirm Payment", icon: "", showTab: false },
   ];
 
   return (
