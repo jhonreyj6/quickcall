@@ -12,7 +12,7 @@ Route::get('/test', function (Request $request) {
 
 Route::group(['prefix' => 'auth', 'namespace' => 'App\Http\Controllers'], function ($router) {
     Route::post('login', 'AuthController@login');
-    Route::post('/register', 'AuthController@register');
+    Route::post('/register', 'AuthController@register')->middleware('throttle.registration');
     Route::post('/logout', 'AuthController@logout')->middleware('auth:api');
 });
 
@@ -25,7 +25,7 @@ Route::group(['prefix' => 'contact', 'middleware' => ['auth:api'], 'namespace' =
     Route::get('/', 'ContactController@index');
     Route::get('/favorite', 'ContactController@favorite');
     Route::get('/search', 'ContactController@search');
-    Route::get('/store', 'ContactController@search');
+    Route::post('/', 'ContactController@store');
 });
 
 Route::group(['prefix' => 'profile', 'middleware' => ['auth:api'], 'namespace' => 'App\Http\Controllers'], function ($router) {

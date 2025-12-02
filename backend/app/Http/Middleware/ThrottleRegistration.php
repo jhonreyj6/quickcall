@@ -11,7 +11,7 @@ class ThrottleRegistration
     /**
      * Maximum registration attempts per IP per day
      */
-    protected $maxAttempts = 10;
+    protected $maxAttempts = 5;
 
     /**
      * Handle an incoming request.

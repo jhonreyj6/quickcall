@@ -37,6 +37,8 @@ class ContactController extends Controller
 
     public function store(Request $request)
     {
+        return response()->json($request->all(), 200);
+
         $validator = Validator::make($request->all(), [
             'name.*'         => 'string|required',
             'phone_number.*' => 'string|required',
@@ -57,11 +59,4 @@ class ContactController extends Controller
 
         return response()->json($contacts, 200);
     }
-
-    public function importContact(Request $request)
-    {
-
-        return response()->json($request->all(), 200);
-    }
-
 }

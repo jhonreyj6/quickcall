@@ -77,17 +77,19 @@ const Contact = () => {
       ...prev,
       [id]: !prev[id],
     }));
+    console.log(selectedImportedContact);
   };
 
   const createImportedContact = async () => {
     const res = await apiRequest({
       method: "POST",
-      pathname: "/contact/favorite",
+      pathname: "/contact",
       token: auth.access_token,
       body: selectedImportedContact,
     });
 
     if (res.ok) {
+      console.log("ok");
     } else {
       alert("Failed to import contacts!");
     }
@@ -142,11 +144,11 @@ const Contact = () => {
           contacts
         </Text>
         <View className="relative mb-8">
-          <FontAwesome6 name="magnifying-glass" size={16} className="left-8 top-6 z-10 absolute" color="white" />
+          <FontAwesome6 name="magnifying-glass" size={15} className="left-6 top-5 z-10 absolute" color="white" />
           <TextInput
             placeholder="Search contacts..."
             placeholderTextColor={"white"}
-            className="p-4 ps-16 bg-secondary rounded-lg text-white text-2xl"
+            className="p-4 ps-14 bg-secondary rounded-lg text-white text-xl"
             numberOfLines={1}
             onChangeText={(v) => {
               setFormSearchQuery(v);
@@ -234,6 +236,17 @@ const Contact = () => {
               </Pressable>
             )}
           />
+
+          <View className="border-t border-gray-500 my-4">
+            <Pressable
+              className="text-white bg-blue-500 border-0 py-2 px-6 rounded-lg text-lg"
+              onPress={() => {
+                createImportedContact();
+              }}
+            >
+              <Text className="text-white text-lg text-center">Import</Text>
+            </Pressable>
+          </View>
         </View>
       </Modal>
     </View>
