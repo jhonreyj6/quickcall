@@ -4,7 +4,7 @@ import { Pressable, Text, View } from "react-native";
 
 const ContactInfoCard = ({ caller }) => {
   return (
-    <View className="flex-row gap-2 items-center">
+    <View className="flex-row gap-4 items-center">
       <View className="w-14 rounded-full h-14 bg-purple-500 items-center justify-center">
         <Text className="text-4xl">{getFirstLetter(caller?.name)}</Text>
       </View>
@@ -21,9 +21,9 @@ const ContactInfoCard = ({ caller }) => {
         <Pressable>
           <FontAwesome6 name="phone" size={16} color="white" className="bg-emerald-500 p-3 rounded-full" />
         </Pressable>
-        <Pressable>
+        {/* <Pressable>
           <FontAwesome6 name="ellipsis" size={16} color="gray" className="p-3" />
-        </Pressable>
+        </Pressable> */}
       </View>
     </View>
   );

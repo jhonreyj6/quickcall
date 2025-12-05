@@ -1,5 +1,4 @@
 import useAuthStore from "@/stores/authStore";
-import { apiRequest } from "@/utils/apiRequest";
 import { useStripe } from "@stripe/stripe-react-native";
 import { router } from "expo-router";
 import React, { useEffect, useRef } from "react";
@@ -15,7 +14,7 @@ const Checkout = () => {
 
   const fetchPaymentIntent = async () => {
     try {
-      const res = await apiRequest({
+      const res = await ApiRequest({
         method: "POST",
         pathname: "/payment/stripe/intent",
         token: auth.access_token,
@@ -48,7 +47,7 @@ const Checkout = () => {
     if (error) {
       Alert.alert(`Payment failed: ${error.message}`);
     } else {
-      const res = await apiRequest({
+      const res = await ApiRequest({
         method: "POST",
         pathname: "/payment/stripe/confirm",
         token: auth.access_token,

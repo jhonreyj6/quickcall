@@ -11,8 +11,8 @@ Route::get('/test', function (Request $request) {
 });
 
 Route::group(['prefix' => 'auth', 'namespace' => 'App\Http\Controllers'], function ($router) {
-    Route::post('login', 'AuthController@login');
-    Route::post('/register', 'AuthController@register')->middleware('throttle.registration');
+    Route::post('login', 'AuthController@login')->middleware('throttle:10,15');
+    Route::post('/register', 'AuthController@register');
     Route::post('/logout', 'AuthController@logout')->middleware('auth:api');
 });
 

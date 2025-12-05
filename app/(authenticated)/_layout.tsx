@@ -27,6 +27,7 @@ const TabLayout = () => {
     { name: "(tabs)/dialer", title: "Dialer", icon: "phone", showTab: true },
     { name: "(tabs)/contact", title: "Contact", icon: "address-book", showTab: true },
     { name: "(tabs)/account", title: "Account", icon: "user", showTab: true },
+    { name: "(pages)/test", title: "Test", icon: "", showTab: false },
     { name: "(pages)/saved/payment", title: "SavedPayment", icon: "", showTab: false },
     { name: "(pages)/profile", title: "Notification", icon: "", showTab: false },
     { name: "(pages)/notification", title: "Notification", icon: "", showTab: false },

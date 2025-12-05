@@ -135,3 +135,15 @@ export function getFirstLetter(str: string) {
 //     element.setAttribute("type", "password");
 //   }
 // }
+
+export function removeObjectKeys(obj: object, keysToRemove: string[]) {
+  const result = { ...obj }; // clone to avoid mutation
+
+  keysToRemove.forEach((key) => {
+    if (key in result) {
+      delete result[key];
+    }
+  });
+
+  return result;
+}

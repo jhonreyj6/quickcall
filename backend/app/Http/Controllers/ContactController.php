@@ -37,26 +37,40 @@ class ContactController extends Controller
 
     public function store(Request $request)
     {
-        return response()->json($request->all(), 200);
+        $condition = [];
+        if (count($request->input('data'))) {
+            $condition = [
+                'data.*.name'                  => 'string|required',
+                'data.*.phoneNumbers.*.number' => 'string|required',
+            ];
+        } else {
+            $condition = [
+                'name.*'         => 'string|required',
+                'phone_number.*' => 'string|required',
+            ];
+        }
 
-        $validator = Validator::make($request->all(), [
-            'name.*'         => 'string|required',
-            'phone_number.*' => 'string|required',
-        ]);
+        $validator = Validator::make($request->all(), $condition);
 
         if ($validator->fails()) {
             return response()->json($validator->messages()->get('*'), 422);
         }
 
         foreach ($request->input('data') as $data) {
-            $contacts = Contact::create([
-                'user_id'      => auth()->id(),
-                'name'         => $data->name,
-                'phone_number' => $data->phone_number,
-                'favorite'     => 0,
-            ]);
+            foreach ($data['phoneNumbers'] as $index => $number) {
+                $exist = Contact::where('name', $data['name'])->orWhere('name', $data['name'] . "_" . $index)->first();
+
+                if (! $exist) {
+                    Contact::create([
+                        'user_id'      => auth()->id(),
+                        'name'         => $index > 0 ? $data['name'] . "_" . $index : $data['name'],
+                        'phone_number' => $data['phoneNumbers'][$index]['number'],
+                        'favorite'     => 0,
+                    ]);
+                }
+            }
         }
 
-        return response()->json($contacts, 200);
+        return response()->json("success", 200);
     }
 }

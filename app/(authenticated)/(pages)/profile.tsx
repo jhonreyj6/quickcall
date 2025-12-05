@@ -1,5 +1,5 @@
 import useAuthStore from "@/stores/authStore";
-import { apiRequest } from "@/utils/apiRequest";
+import { ApiRequest } from "@/utils/ApiRequest";
 import { default_image } from "@/utils/const";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { useState } from "react";
@@ -14,7 +14,7 @@ const Profile = () => {
   });
 
   const updateProfile = async () => {
-    const res = await apiRequest({
+    const res = await ApiRequest({
       method: "POST",
       pathname: "/profile/update",
       token: auth.access_token,

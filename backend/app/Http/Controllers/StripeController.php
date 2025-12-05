@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\CreditPrice;
 use App\Models\UserCreditPayment;
 use Auth;
 use Illuminate\Http\Request;
@@ -14,11 +15,12 @@ class StripeController extends Controller
     public function createPaymentIntent(Request $request)
     {
         Stripe::setApiKey(env('STRIPE_SECRET'));
+        $product = CreditPrice::where('package_name', $request->package_name)->firstOrFail();
 
         try {
             $user          = Auth::user();
             $paymentIntent = PaymentIntent::create([
-                'amount'                    => 4000,
+                'amount'                    => $product->price,
                 'currency'                  => 'usd',
                 'automatic_payment_methods' => [
                     'enabled'         => true,

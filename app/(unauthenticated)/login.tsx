@@ -14,21 +14,30 @@ const Login = () => {
   const storeLogin = useAuthStore((state) => state.login);
 
   const authenticate = async () => {
-    const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(form),
-    });
+    try {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
 
-    const data = await response.json();
+      if (response.status === 429) {
+        alert("Too many Attempts. Try again in 15 minutes."); // "Too Many Attempts."
+        return;
+      }
 
-    if (response.ok) {
-      storeLogin(data);
-      router.replace("/dialer");
-    } else {
-      alert(data.error);
+      const data = await response.json();
+
+      if (response.ok) {
+        storeLogin(data);
+        router.replace("/dialer");
+      } else {
+        alert(data.error);
+      }
+    } catch (error) {
+      console.log("Network error", error);
     }
   };
 

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('phone_number');
             $table->dateTime('called_at');
-            $table->string('call_type');
+            $table->integer('call_type');
             $table->timestamps();
         });
     }

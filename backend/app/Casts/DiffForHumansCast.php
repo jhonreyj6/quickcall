@@ -2,6 +2,7 @@
 namespace App\Casts;
 
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
 
@@ -15,7 +16,10 @@ class DiffForHumansCast implements CastsAttributes
     public function get(Model $model, string $key, mixed $value, array $attributes): mixed
     {
         if ($value) {
-            $value = Carbon::create($value)->diffForHumans();
+            $value = Carbon::create($value)->diffForHumans([
+                'short'  => true,
+                'syntax' => CarbonInterface::DIFF_ABSOLUTE,
+            ]);
         }
 
         return $value;

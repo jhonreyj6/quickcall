@@ -1,6 +1,6 @@
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
-export async function apiRequest({
+export async function ApiRequest({
   pathname,
   method = "GET",
   token,
@@ -24,6 +24,7 @@ export async function apiRequest({
     }
 
     const defaultHeaders = {
+      Accept: "application/json",
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`, // default bearer
       ...headers, // merge additional headers
@@ -41,6 +42,11 @@ export async function apiRequest({
     const response = await fetch(`${url}`, options);
 
     const data = await response.json().catch(() => null);
+
+    // if (response.status === 401) {
+
+    //   return false;
+    // }
 
     return {
       ok: response.ok,

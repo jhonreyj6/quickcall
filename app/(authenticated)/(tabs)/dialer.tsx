@@ -1,6 +1,7 @@
 import ContactInfoCard from "@/components/ContactInfoCard";
+import NoData from "@/components/NoData";
 import useAuthStore from "@/stores/authStore";
-import { apiRequest } from "@/utils/apiRequest";
+import { ApiRequest } from "@/utils/ApiRequest";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Audio } from "expo-av";
 import { useEffect, useRef, useState } from "react";
@@ -22,15 +23,13 @@ const Dialer = () => {
   const [sound, setSound] = useState();
 
   const getRecent = async () => {
-    const res = await apiRequest({
+    const res = await ApiRequest({
       pathname: "/recent",
       token: auth.access_token,
     });
 
     if (res.ok) {
       setRecentCalls(res.data);
-    } else {
-      alert("Failed to fetch recent call");
     }
   };
 
@@ -88,6 +87,10 @@ const Dialer = () => {
     setFormDial((prev) => (prev && prev.length ? prev.slice(0, -1) : null));
   };
 
+  function countByCallType(data, callType) {
+    return data.filter((item) => item.call_type === callType).length;
+  }
+
   useEffect(() => {
     return sound
       ? () => {
@@ -118,28 +121,20 @@ const Dialer = () => {
     <>
       <View className="flex-1 mx-4">
         <Text className="text-white mb-3 text-2xl">Recent Calls</Text>
-        <Text className="text-gray-500 mb-4">6 calls this week</Text>
         <View className="flex-row gap-4 items-center mb-8">
           <View className="p-4 border bg-sky-950 flex-1 rounded-lg">
-            <Text className="text-lg text-emerald-500">24</Text>
+            <Text className="text-lg text-emerald-500">{countByCallType(recentCalls.data, 2)}</Text>
             <Text className="text-gray-500">Outgoing</Text>
           </View>
           <View className="p-4 border bg-sky-950 flex-1 rounded-lg">
-            <Text className="text-blue-500 text-lg">13</Text>
+            <Text className="text-blue-500 text-lg">{countByCallType(recentCalls.data, 1)}</Text>
             <Text className="text-gray-500">Incoming</Text>
           </View>
           <View className="p-4 border bg-sky-950 flex-1 rounded-lg">
-            <Text className="text-danger text-lg">8</Text>
+            <Text className="text-danger text-lg">{countByCallType(recentCalls.data, 0)}</Text>
             <Text className="text-gray-500">Missed</Text>
           </View>
         </View>
-
-        {/* <ScrollView contentContainerClassName="flex-col gap-4 pb-8">
-          {recentCalls.data.length > 0 &&
-            recentCalls.data.map((caller, index) => {
-              return <ContactInfoCard key={index} caller={caller} />;
-            })}
-        </ScrollView> */}
 
         <FlatList
           data={recentCalls.data}
@@ -147,7 +142,7 @@ const Dialer = () => {
           renderItem={({ item }) => <ContactInfoCard caller={item} />}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 32, flexDirection: "column", gap: 16 }} // pb-8 -> 32px, gap-4 -> 16px
-          ListEmptyComponent={null} // optional, shows nothing if empty
+          ListEmptyComponent={() => <NoData center />}
         />
 
         {modalVisible === false && (

@@ -1,6 +1,7 @@
 import ContactInfoCard from "@/components/ContactInfoCard";
+import NoData from "@/components/NoData";
 import useAuthStore from "@/stores/authStore";
-import { apiRequest } from "@/utils/apiRequest";
+import { ApiRequest } from "@/utils/ApiRequest";
 import { FontAwesome6 } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import * as Contacts from "expo-contacts";
@@ -17,10 +18,10 @@ const Contact = () => {
 
   const [importedContacts, setImportedContacts] = useState({});
   const [showImportedContactDialogue, setShowImportedContactDialogue] = useState(false);
-  const [selectedImportedContact, setSelectedImportedContact] = useState({});
+  const [selectedImportedContact, setSelectedImportedContact] = useState([]);
 
   const getContacts = async () => {
-    const res = await apiRequest({
+    const res = await ApiRequest({
       pathname: "/contact",
       token: auth.access_token,
     });
@@ -33,7 +34,7 @@ const Contact = () => {
   };
 
   const getFavorite = async () => {
-    const res = await apiRequest({
+    const res = await ApiRequest({
       pathname: "/contact/favorite",
       token: auth.access_token,
     });
@@ -46,7 +47,7 @@ const Contact = () => {
   };
 
   const searchContact = async () => {
-    const res = await apiRequest({
+    const res = await ApiRequest({
       pathname: "/contact/search",
       token: auth.access_token,
       params: { query: formSearchQuery },
@@ -72,26 +73,45 @@ const Contact = () => {
     }
   };
 
-  const toggleSelect = (id) => {
-    setSelectedImportedContact((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-    console.log(selectedImportedContact);
-  };
-
   const createImportedContact = async () => {
-    const res = await apiRequest({
+    if (selectedImportedContact.length === 0) {
+      alert("Select contact to import");
+      return;
+    }
+
+    let body = importedContacts.filter((data) => {
+      if (selectedImportedContact.includes(data.id)) {
+        return data;
+      }
+    });
+
+    const res = await ApiRequest({
       method: "POST",
       pathname: "/contact",
       token: auth.access_token,
-      body: selectedImportedContact,
+      body: {
+        data: body,
+      },
     });
 
     if (res.ok) {
-      console.log("ok");
+      setShowImportedContactDialogue(false);
+      setSelectedImportedContact([]);
+      getContacts();
     } else {
-      alert("Failed to import contacts!");
+      console.log(res);
+    }
+  };
+
+  const selectAll = () => {
+    if (selectedImportedContact.length !== Object.keys(importedContacts).length) {
+      importedContacts.forEach((element) => {
+        if (!selectedImportedContact.includes(element.id))
+          setSelectedImportedContact((oldArray) => [...oldArray, element.id]);
+      });
+    } else {
+      console.log("else");
+      setSelectedImportedContact([]);
     }
   };
 
@@ -125,8 +145,10 @@ const Contact = () => {
   return (
     <View className="flex-1">
       <View className="px-4 flex-1">
-        <View className="flex-row items-center justify-between">
-          <Text className="text-2xl text-white mb-2">Contacts</Text>
+        <View className="flex-row items-center justify-between mb-6">
+          <Pressable onPress={() => {}}>
+            <Text className="text-2xl text-white">Contacts</Text>
+          </Pressable>
           <Pressable
             className="bg-secondary border-0 py-1.5 px-6 rounded-lg text-lg"
             onPress={() => {
@@ -137,12 +159,6 @@ const Contact = () => {
             <Text className="text-blue-500">Import</Text>
           </Pressable>
         </View>
-        <Text className="text-gray-500 mb-4">
-          {searchQueryData.data.length > 0
-            ? searchQueryData.data.length
-            : contacts.data.length + favoriteContacts.data.length}{" "}
-          contacts
-        </Text>
         <View className="relative mb-8">
           <FontAwesome6 name="magnifying-glass" size={15} className="left-6 top-5 z-10 absolute" color="white" />
           <TextInput
@@ -159,10 +175,24 @@ const Contact = () => {
         {searchQueryData.data.length === 0 && (
           <FlatList
             data={[
-              { type: "header", title: "Favorites" },
-              ...favoriteContacts.data.map((item) => ({ type: "favorite", caller: item })),
-              { type: "header", title: "All Contacts" },
-              ...contacts.data.map((item) => ({ type: "contact", caller: item })),
+              ...(favoriteContacts.data.length > 0
+                ? [
+                    { type: "header", title: "Favorites" },
+                    ...favoriteContacts.data.map((item) => ({
+                      type: "favorite",
+                      caller: item,
+                    })),
+                  ]
+                : []),
+              ...(contacts.data.length > 0
+                ? [
+                    { type: "header", title: "All Contacts" },
+                    ...contacts.data.map((item) => ({
+                      type: "contact",
+                      caller: item,
+                    })),
+                  ]
+                : []),
             ]}
             keyExtractor={(item, index) =>
               item.type === "header" ? `header-${item.title}` : item.caller.id || index.toString()
@@ -172,7 +202,7 @@ const Contact = () => {
             renderItem={({ item }) => {
               if (item.type === "header") {
                 return (
-                  <View className="mb-4 mt-4">
+                  <View className="mb-4 mt-4 flex-row gap-2 items-center">
                     <Text className="text-white text-lg font-bold">{item.title}</Text>
                   </View>
                 );
@@ -184,6 +214,7 @@ const Contact = () => {
                 </View>
               );
             }}
+            ListEmptyComponent={() => <NoData center />}
           />
         )}
 
@@ -194,6 +225,7 @@ const Contact = () => {
             renderItem={({ item }) => <ContactInfoCard caller={item} />}
             contentContainerStyle={{ paddingBottom: 32 }}
             showsVerticalScrollIndicator={true}
+            ListEmptyComponent={() => <NoData center />}
           />
         )}
       </View>
@@ -204,40 +236,79 @@ const Contact = () => {
         visible={showImportedContactDialogue}
         onRequestClose={() => setShowImportedContactDialogue(false)}
       >
-        <View className="flex-1 bg-secondary px-8">
+        <View className="flex-1 bg-secondary">
+          <View className="mb-6 mt-4 border-b border-gray-500 pb-4 px-8 justify-between flex-row items-center">
+            <Pressable
+              className="text-white text-lg flex-row items-center gap-2"
+              onPress={() => {
+                setShowImportedContactDialogue(false);
+              }}
+            >
+              <FontAwesome6 name="arrow-left" color="white" size={16} />
+              <Text className="text-white text-xl text-center">Go back</Text>
+            </Pressable>
+
+            <Pressable
+              className="flex-row gap-4 items-center"
+              onPress={() => {
+                selectAll();
+              }}
+            >
+              <Text className="text-white text-xl">Select All</Text>
+              <Checkbox
+                onValueChange={() => selectAll()}
+                value={selectedImportedContact.length === Object.keys(importedContacts).length ? true : false}
+                color={selectedImportedContact.length === Object.keys(importedContacts).length ? "yellowgreen" : "gray"}
+              />
+            </Pressable>
+          </View>
+
           <FlatList
             data={importedContacts}
-            keyExtractor={(item) => item.id} // ✔ use contact id
-            ItemSeparatorComponent={() => <View style={{ marginBottom: 16 }} />}
-            contentContainerStyle={{ paddingBottom: 32 }}
+            keyExtractor={(item) => item.id}
+            ItemSeparatorComponent={() => <View style={{ marginBottom: 12 }} />}
+            contentContainerStyle={{ paddingBottom: 24, paddingHorizontal: 24 }}
             showsVerticalScrollIndicator={false}
             renderItem={({ item }) => (
-              <Pressable onPress={() => toggleSelect(item.id)} className="flex-row gap-8 items-center">
-                {/* CHECKBOX */}
+              <Pressable
+                className="flex-row gap-8 items-center"
+                onPress={() => {
+                  if (!selectedImportedContact.includes(item.id)) {
+                    setSelectedImportedContact((prev) => [...prev, item.id]);
+                  } else {
+                    setSelectedImportedContact((prev) => prev.filter((data) => data !== item.id));
+                  }
+                }}
+              >
                 <Checkbox
-                  value={!!selectedImportedContact[item.id]}
-                  onValueChange={() => toggleSelect(item.id)}
-                  color={selectedImportedContact[item.id] ? "#4ade80" : undefined}
+                  value={selectedImportedContact.includes(item.id) ? true : false}
+                  onValueChange={() => {
+                    if (!selectedImportedContact.includes(item.id)) {
+                      setSelectedImportedContact((prev) => [...prev, item.id]);
+                    } else {
+                      setSelectedImportedContact((prev) => prev.filter((data) => data !== item.id));
+                    }
+                  }}
+                  color={selectedImportedContact.includes(item.id) === true ? "yellowgreen" : "gray"}
                 />
-
-                {/* Contact information */}
                 <View className="flex-col gap-1">
                   <Text className="text-white text-xl">{item.name}</Text>
-
                   {item.phoneNumbers && item.phoneNumbers.length > 0 && (
                     <Text className="text-gray-500 text-sm">{item.phoneNumbers[0].number}</Text>
                   )}
                 </View>
-
                 {/* Green check on the right */}
-                {selectedImportedContact[item.id] && (
-                  <FontAwesome6 name="check" size={24} className="ml-auto" color="green" />
-                )}
+                <FontAwesome6
+                  name="check"
+                  size={24}
+                  className="ml-auto"
+                  color={selectedImportedContact.includes(item.id) === true ? "yellowgreen" : "gray"}
+                />
               </Pressable>
             )}
+            ListEmptyComponent={() => <NoData center />}
           />
-
-          <View className="border-t border-gray-500 my-4">
+          <View className="border-t border-gray-500 my-4 pt-4 px-8">
             <Pressable
               className="text-white bg-blue-500 border-0 py-2 px-6 rounded-lg text-lg"
               onPress={() => {

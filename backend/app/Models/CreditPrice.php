@@ -3,12 +3,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Contact extends Model
+class CreditPrice extends Model
 {
     protected $fillable = [
-        'user_id',
-        'name',
-        'phone_number',
-        'favorite',
+        'stripe_product_id',
+        'package_name',
+        'price',
     ];
 }

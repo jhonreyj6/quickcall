@@ -1,5 +1,5 @@
 import useAuthStore from "@/stores/authStore";
-import { apiRequest } from "@/utils/apiRequest";
+import { ApiRequest } from "@/utils/ApiRequest";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { router } from "expo-router";
 
@@ -9,7 +9,7 @@ const Account = () => {
   const auth = useAuthStore((state) => state);
 
   const logout = async () => {
-    const res = await apiRequest({
+    const res = await ApiRequest({
       method: "POST",
       pathname: "/auth/logout",
       token: auth.access_token,
@@ -88,16 +88,28 @@ const Account = () => {
         <View className="mb-4">
           <Text className="mb-2 text-gray-500">Others</Text>
 
-          <Pressable
-            className="p-4 flex rounded-xl bg-secondary flex-row gap-4 items-center"
-            onPress={() => {
-              router.push("/pricing");
-            }}
-          >
-            <FontAwesome6 name="dollar" color="gray" size={16} className="bg-primary p-4 px-5 rounded-full" />
-            <Text className="text-xl text-white">Buy Credits</Text>
-            <FontAwesome6 name="angle-right" size={20} color="gray" className="ml-auto mr-4" />
-          </Pressable>
+          <View className="flex-col gap-4">
+            <Pressable
+              className="p-4 flex rounded-xl bg-secondary flex-row gap-4 items-center"
+              onPress={() => {
+                router.push("/pricing");
+              }}
+            >
+              <FontAwesome6 name="dollar" color="gray" size={16} className="bg-primary p-4 px-5 rounded-full" />
+              <Text className="text-xl text-white">Buy Credits</Text>
+              <FontAwesome6 name="angle-right" size={20} color="gray" className="ml-auto mr-4" />
+            </Pressable>
+            <Pressable
+              className="p-4 flex rounded-xl bg-secondary flex-row gap-4 items-center"
+              onPress={() => {
+                router.push("/test");
+              }}
+            >
+              <FontAwesome6 name="dollar" color="gray" size={16} className="bg-primary p-4 px-5 rounded-full" />
+              <Text className="text-xl text-white">Go to Test</Text>
+              <FontAwesome6 name="angle-right" size={20} color="gray" className="ml-auto mr-4" />
+            </Pressable>
+          </View>
         </View>
 
         <View className="border-t border-secondary pt-8 mt-4 mb-8">

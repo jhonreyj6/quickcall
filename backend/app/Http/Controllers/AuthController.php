@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Validator;
 
 class AuthController extends Controller
@@ -37,7 +38,6 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-
         $validator = Validator::make(request()->all(), [
             'name'             => 'required|min:2',
             'email'            => 'required|email|unique:users',
@@ -49,7 +49,23 @@ class AuthController extends Controller
             return response()->json($validator->messages()->get('*'), 400);
         }
 
-        $user = User::create([
+        $maxAttempts = 2;
+        $ip          = $request->ip();
+        $cacheKey    = 'registration_attempts_' . $ip;
+        $attempts    = Cache::get($cacheKey, 0);
+
+        if ($attempts >= $maxAttempts) {
+
+            return response()->json([
+                'message' => 'You have reached the maximum number of registrations for today.',
+            ], 429); // HTTP 429 Too Many Requests
+        }
+
+        // Increment attempt count and set expiration to the end of the day
+        $expiresAt = now()->endOfDay();
+        Cache::put($cacheKey, $attempts + 1, $expiresAt);
+
+        User::create([
             'name'     => $request->input('name'),
             'email'    => $request->input('email'),
             'password' => $request->input('password'),
@@ -58,8 +74,6 @@ class AuthController extends Controller
         // Mail::to($user->email)->send(new UserRegister($user));
 
         return $this->login($request);
-
-        return response()->json($user, 201);
     }
 
     /**
