@@ -58,6 +58,8 @@ const Dialer = () => {
         loading: res.data.last_page === res.data.current_page ? true : false,
         page: prevState.page + 1,
       }));
+    } else {
+      alert("Failed to get recent calls!");
     }
   };
 
@@ -169,7 +171,7 @@ const Dialer = () => {
           keyExtractor={(item, index) => item.id.toString()} // ideally use a unique ID if available
           renderItem={({ item }) => <ContactInfoCard caller={item} />}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 32, flexDirection: "column", gap: 16 }} // pb-8 -> 32px, gap-4 -> 16px
+          contentContainerStyle={{ paddingBottom: 32, flexDirection: "column", gap: 12 }} // pb-8 -> 32px, gap-4 -> 16px
           ListEmptyComponent={() => <NoData center />}
           onEndReached={getRecent}
           onEndReachedThreshold={0.15}

@@ -23,7 +23,6 @@ Route::group(['prefix' => 'recent', 'middleware' => ['auth:api'], 'namespace' =>
 
 Route::group(['prefix' => 'contact', 'middleware' => ['auth:api'], 'namespace' => 'App\Http\Controllers'], function ($router) {
     Route::get('/', 'ContactController@index');
-    Route::get('/favorite', 'ContactController@favorite');
     Route::get('/search', 'ContactController@search');
     Route::post('/', 'ContactController@store');
 });

@@ -6,11 +6,10 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import * as Contacts from "expo-contacts";
 import { useEffect, useRef, useState } from "react";
-import { FlatList, Modal, Pressable, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, FlatList, Modal, Pressable, Text, TextInput, View } from "react-native";
 
 const Contact = () => {
-  const [contacts, setContacts] = useState({ data: [] });
-  const [favoriteContacts, setFavoriteContacts] = useState({ data: [] });
+  const [contacts, setContacts] = useState({ data: [], current_page: 1, last_page: 1 });
   const [searchQueryData, setSearchQueryData] = useState({ data: [] });
   const auth = useAuthStore((state) => state);
   const typingTimeout = useRef(null);
@@ -19,30 +18,46 @@ const Contact = () => {
   const [importedContacts, setImportedContacts] = useState({});
   const [showImportedContactDialogue, setShowImportedContactDialogue] = useState(false);
   const [selectedImportedContact, setSelectedImportedContact] = useState([]);
+  const [contactPaginate, setContactPaginate] = useState({
+    loading: false,
+    page: 1,
+  });
 
   const getContacts = async () => {
+    if (contactPaginate.loading) return;
+
+    setContactPaginate((prevState) => ({
+      ...prevState,
+      loading: true,
+    }));
+
     const res = await ApiRequest({
       pathname: "/contact",
       token: auth.access_token,
+      params: {
+        page: contactPaginate.page,
+      },
     });
 
     if (res.ok) {
-      setContacts(res.data);
-    } else {
-      alert("Failed to fetch contacts");
-    }
-  };
+      if (contactPaginate.page == 1) {
+        setContacts(res.data);
+      } else {
+        setContacts((prevState) => ({
+          ...prevState,
+          data: [...prevState.data, ...res.data.data],
+          last_page: res.data.last_page,
+          current_page: res.data.current_page,
+        }));
+      }
 
-  const getFavorite = async () => {
-    const res = await ApiRequest({
-      pathname: "/contact/favorite",
-      token: auth.access_token,
-    });
-
-    if (res.ok) {
-      setFavoriteContacts(res.data);
+      setContactPaginate((prevState) => ({
+        ...prevState,
+        loading: res.data.last_page === res.data.current_page ? true : false,
+        page: prevState.page + 1,
+      }));
     } else {
-      alert("Failed to fetch favorite contacts");
+      alert("Failed to get contacts!");
     }
   };
 
@@ -139,7 +154,6 @@ const Contact = () => {
 
   useEffect(() => {
     getContacts();
-    getFavorite();
   }, []);
 
   return (
@@ -174,47 +188,20 @@ const Contact = () => {
 
         {searchQueryData.data.length === 0 && (
           <FlatList
-            data={[
-              ...(favoriteContacts.data.length > 0
-                ? [
-                    { type: "header", title: "Favorites" },
-                    ...favoriteContacts.data.map((item) => ({
-                      type: "favorite",
-                      caller: item,
-                    })),
-                  ]
-                : []),
-              ...(contacts.data.length > 0
-                ? [
-                    { type: "header", title: "All Contacts" },
-                    ...contacts.data.map((item) => ({
-                      type: "contact",
-                      caller: item,
-                    })),
-                  ]
-                : []),
-            ]}
-            keyExtractor={(item, index) =>
-              item.type === "header" ? `header-${item.title}` : item.caller.id || index.toString()
-            }
+            data={contacts.data}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => <ContactInfoCard caller={item} />}
+            contentContainerStyle={{ paddingBottom: 32, gap: 12 }}
             showsVerticalScrollIndicator={true}
-            contentContainerStyle={{ paddingBottom: 32 }}
-            renderItem={({ item }) => {
-              if (item.type === "header") {
-                return (
-                  <View className="mb-4 mt-4 flex-row gap-2 items-center">
-                    <Text className="text-white text-lg font-bold">{item.title}</Text>
-                  </View>
-                );
-              }
-
-              return (
-                <View className="mb-4">
-                  <ContactInfoCard caller={item.caller} />
-                </View>
-              );
-            }}
-            ListEmptyComponent={() => <NoData center />}
+            onEndReached={getContacts}
+            onEndReachedThreshold={0.15}
+            ListFooterComponent={
+              contacts.current_page != contacts.last_page ? (
+                <ActivityIndicator />
+              ) : (
+                <NoData message="--- Limit reached ---" />
+              )
+            }
           />
         )}
 

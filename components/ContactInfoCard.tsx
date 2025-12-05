@@ -1,4 +1,4 @@
-import { getFirstLetter } from "@/utils/function";
+import { getFirstLetter, limitText } from "@/utils/function";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
 
@@ -11,7 +11,7 @@ const ContactInfoCard = ({ caller }) => {
 
       <View className="flex-col">
         <View className="flex-row items-baseline gap-2">
-          <Text className="text-white text-lg">{caller?.name}</Text>
+          <Text className="text-white text-lg">{limitText(caller?.name, 20)}</Text>
           <Text className="text-gray-500 ml-auto text-xs">{caller?.called_at}</Text>
         </View>
         <Text className="text-gray-500 text-sm">{caller?.phone_number}</Text>
