@@ -5,11 +5,11 @@ import { ApiRequest } from "@/utils/ApiRequest";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Audio } from "expo-av";
 import { useEffect, useRef, useState } from "react";
-import { FlatList, Modal, Pressable, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, Modal, Pressable, ScrollView, Text, View } from "react-native";
 
 const Dialer = () => {
   const [formDial, setFormDial] = useState<string | null>(null);
-  const [recentCalls, setRecentCalls] = useState({ data: [] });
+  const [recentCalls, setRecentCalls] = useState({ data: [], current_page: 1, last_page: 1 });
 
   // Refs for controlling continuous delete + acceleration
   const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -19,17 +19,45 @@ const Dialer = () => {
   const scrollRef = useRef<ScrollView | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const auth = useAuthStore((state) => state);
-
+  const [recentPaginate, setRecentPaginate] = useState({
+    loading: false,
+    page: 1,
+  });
   const [sound, setSound] = useState();
 
   const getRecent = async () => {
+    if (recentPaginate.loading) return;
+
+    setRecentPaginate((prevState) => ({
+      ...prevState,
+      loading: true,
+    }));
+
     const res = await ApiRequest({
       pathname: "/recent",
       token: auth.access_token,
+      params: {
+        page: recentPaginate.page,
+      },
     });
 
     if (res.ok) {
-      setRecentCalls(res.data);
+      if (recentPaginate.page == 1) {
+        setRecentCalls(res.data);
+      } else {
+        setRecentCalls((prevState) => ({
+          ...prevState,
+          data: [...prevState.data, ...res.data.data],
+          last_page: res.data.last_page,
+          current_page: res.data.current_page,
+        }));
+      }
+
+      setRecentPaginate((prevState) => ({
+        ...prevState,
+        loading: res.data.last_page === res.data.current_page ? true : false,
+        page: prevState.page + 1,
+      }));
     }
   };
 
@@ -138,11 +166,14 @@ const Dialer = () => {
 
         <FlatList
           data={recentCalls.data}
-          keyExtractor={(item, index) => index.toString()} // ideally use a unique ID if available
+          keyExtractor={(item, index) => item.id.toString()} // ideally use a unique ID if available
           renderItem={({ item }) => <ContactInfoCard caller={item} />}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 32, flexDirection: "column", gap: 16 }} // pb-8 -> 32px, gap-4 -> 16px
           ListEmptyComponent={() => <NoData center />}
+          onEndReached={getRecent}
+          onEndReachedThreshold={0.15}
+          ListFooterComponent={recentCalls.current_page != recentCalls.last_page ? <ActivityIndicator /> : <NoData />}
         />
 
         {modalVisible === false && (
@@ -162,13 +193,6 @@ const Dialer = () => {
         onRequestClose={() => setModalVisible(false)}
       >
         <View className="px-4 flex-1 bg-primary">
-          {/* <ScrollView contentContainerClassName="gap-2 flex-col" showsVerticalScrollIndicator={false}>
-            {recentCalls.data.length &&
-              recentCalls.data.map((caller, index) => {
-                return <ContactInfoCard key={index} caller={caller} />;
-              })}
-          </ScrollView> */}
-
           <FlatList
             data={recentCalls.data} // your array
             keyExtractor={(item, index) => index.toString()} // ideally use a unique id if available
