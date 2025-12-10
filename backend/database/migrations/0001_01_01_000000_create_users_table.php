@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             // $table->string('phone_number');
-            $table->decimal('credit_balance', 2)->default(0.00);
+            $table->decimal('credit_balance', 10, 2)->default(0.00);
             $table->boolean('disabled')->default(false);
             $table->rememberToken();
             $table->timestamps();

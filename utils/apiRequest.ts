@@ -40,13 +40,8 @@ export async function ApiRequest({
     }
 
     const response = await fetch(`${url}`, options);
-
-    const data = await response.json().catch(() => null);
-
-    // if (response.status === 401) {
-
-    //   return false;
-    // }
+    // const data = await response.json().catch(() => null);
+    const data = await response.json();
 
     return {
       ok: response.ok,

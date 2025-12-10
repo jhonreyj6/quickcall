@@ -12,4 +12,11 @@ class RecentController extends Controller
         return response()->json($recent, 200);
     }
 
+    public function deleteAll(Request $request)
+    {
+        Recent::where('user_id', auth()->user()->id)->delete();
+
+        return response()->json(['message' => 'success'], 200);
+    }
+
 }

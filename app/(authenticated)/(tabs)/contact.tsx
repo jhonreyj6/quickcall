@@ -5,6 +5,7 @@ import { ApiRequest } from "@/utils/ApiRequest";
 import { FontAwesome6 } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import * as Contacts from "expo-contacts";
+import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, Modal, Pressable, Text, TextInput, View } from "react-native";
 
@@ -57,7 +58,10 @@ const Contact = () => {
         page: prevState.page + 1,
       }));
     } else {
-      alert("Failed to get contacts!");
+      if (res.status === 401) {
+        auth.logout();
+        router.replace("/login");
+      }
     }
   };
 
@@ -71,7 +75,10 @@ const Contact = () => {
     if (res.ok) {
       setSearchQueryData(res.data);
     } else {
-      alert("Failed to search contacts");
+      if (res.status === 401) {
+        auth.logout();
+        router.replace("/login");
+      }
     }
   };
 
@@ -83,7 +90,7 @@ const Contact = () => {
       });
 
       if (data.length > 0) {
-        setImportedContacts(data);
+        setImportedContacts(data.filter((item) => item.phoneNumbers && item.phoneNumbers.length > 0));
       }
     }
   };
@@ -114,7 +121,7 @@ const Contact = () => {
       setSelectedImportedContact([]);
       getContacts();
     } else {
-      console.log(res);
+      alert("Failed to import contact!");
     }
   };
 
@@ -125,7 +132,6 @@ const Contact = () => {
           setSelectedImportedContact((oldArray) => [...oldArray, element.id]);
       });
     } else {
-      console.log("else");
       setSelectedImportedContact([]);
     }
   };

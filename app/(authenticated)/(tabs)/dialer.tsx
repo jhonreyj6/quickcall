@@ -1,9 +1,11 @@
+import ConfirmDialogue from "@/components/ConfirmDialogue";
 import ContactInfoCard from "@/components/ContactInfoCard";
 import NoData from "@/components/NoData";
 import useAuthStore from "@/stores/authStore";
 import { ApiRequest } from "@/utils/ApiRequest";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Audio } from "expo-av";
+import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, Modal, Pressable, ScrollView, Text, View } from "react-native";
 
@@ -24,6 +26,7 @@ const Dialer = () => {
     page: 1,
   });
   const [sound, setSound] = useState();
+  const [clearRecentOpenDialogue, setClearRecentOpenDialogue] = useState(false);
 
   const getRecent = async () => {
     if (recentPaginate.loading) return;
@@ -59,7 +62,25 @@ const Dialer = () => {
         page: prevState.page + 1,
       }));
     } else {
-      alert("Failed to get recent calls!");
+      if (res.status === 401) {
+        auth.logout();
+        router.replace("/login");
+      }
+    }
+  };
+
+  const clearRecent = async () => {
+    const res = await ApiRequest({
+      method: "DELETE",
+      pathname: "/recent",
+      token: auth.access_token,
+    });
+
+    if (res.ok) {
+      alert("Recent clear.");
+      setRecentCalls({ data: [], current_page: 1, last_page: 1 });
+    } else {
+      alert("Failed to clear recent.");
     }
   };
 
@@ -150,7 +171,18 @@ const Dialer = () => {
   return (
     <>
       <View className="flex-1 mx-4">
-        <Text className="text-white mb-3 text-2xl">Recent Calls</Text>
+        <View className="flex-row justify-between items-center mb-4">
+          <Text className="text-white text-2xl">Recent Calls</Text>
+          <Pressable
+            className="flex-row items-center gap-2 bg-blue-500 py-2 px-4 rounded-lg"
+            onPress={() => {
+              setClearRecentOpenDialogue(true);
+            }}
+          >
+            <FontAwesome6 name="trash" color="white" />
+            <Text className="text-white">Clear All</Text>
+          </Pressable>
+        </View>
         <View className="flex-row gap-4 items-center mb-8">
           <View className="p-4 border bg-sky-950 flex-1 rounded-lg">
             <Text className="text-lg text-emerald-500">{countByCallType(recentCalls.data, 2)}</Text>
@@ -172,7 +204,6 @@ const Dialer = () => {
           renderItem={({ item }) => <ContactInfoCard caller={item} />}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 32, flexDirection: "column", gap: 12 }} // pb-8 -> 32px, gap-4 -> 16px
-          ListEmptyComponent={() => <NoData center />}
           onEndReached={getRecent}
           onEndReachedThreshold={0.15}
           ListFooterComponent={recentCalls.current_page != recentCalls.last_page ? <ActivityIndicator /> : <NoData />}
@@ -405,6 +436,8 @@ const Dialer = () => {
           </View>
         </View>
       </Modal>
+
+      <ConfirmDialogue state={clearRecentOpenDialogue} setState={setClearRecentOpenDialogue} action={clearRecent} />
     </>
   );
 };

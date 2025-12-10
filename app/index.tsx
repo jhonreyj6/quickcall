@@ -1,7 +1,7 @@
 import useAuthStore from "@/stores/authStore";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useIsFocused } from "@react-navigation/native";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import Swiper from "react-native-swiper";
@@ -13,7 +13,8 @@ export default function HomeScreen() {
 
   useEffect(() => {
     if (layoutReady && isFocused && auth.isAuthenticated) {
-      console.log("Layout is ready — now useEffect runs");
+      // console.log("Layout is ready — now useEffect runs");
+      if (auth.isAuthenticated) router.replace("/dialer");
     }
   }, [layoutReady]);
 
@@ -36,9 +37,9 @@ export default function HomeScreen() {
         className="flex-1"
       >
         <ScrollView className="p-12 flex-1" showsVerticalScrollIndicator={false}>
-          <Link href={"/dialer"} className="bg-blue-500 text-white text-xl rounded-xl py-3 text-center">
+          {/* <Link href={"/dialer"} className="bg-blue-500 text-white text-xl rounded-xl py-3 text-center">
             Dialer
-          </Link>
+          </Link> */}
 
           <View className="border p-2 rounded-full bg-sky-950 mb-8">
             <Text className="text-blue-500 text-center">Trusted by 10,000 Users Worldwide</Text>

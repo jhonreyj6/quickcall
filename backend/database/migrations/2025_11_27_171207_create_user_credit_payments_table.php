@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('stripe_payment_intent_id')->unique();
+            $table->integer('amount');
             $table->timestamps();
         });
     }

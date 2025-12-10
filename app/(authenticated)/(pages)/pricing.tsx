@@ -12,7 +12,7 @@ const Pricing = () => {
           <View className="flex-row justify-center items-center gap-2 mb-8">
             <Text className="text-3xl text-center text-white">$1.00</Text>
           </View>
-          <Pressable className=" bg-primary border-0 py-3 px-6 rounded-xl mb-12">
+          <Pressable className=" bg-gray-500 border-0 py-3 px-6 rounded-xl mb-12">
             <Text className="text-white text-lg text-center">Default</Text>
           </Pressable>
           <View className="flex-col gap-2">
@@ -57,7 +57,7 @@ const Pricing = () => {
           </View>
           <Link
             href={"/payment/checkout?plan=advance"}
-            className="text-center text-white bg-primary border-0 py-3 px-6 rounded-xl text-lg mb-12"
+            className="text-center text-white bg-blue-500 border-0 py-3 px-6 rounded-xl text-lg mb-12"
           >
             Buy now
           </Link>

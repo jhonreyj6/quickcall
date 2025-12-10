@@ -1,10 +1,7 @@
-// import { STRIPE_KEY } from "@env";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { Image, Text, View } from "react-native";
 
 const MyPayment = () => {
-  // console.log(STRIPE_KEY);
-
   return (
     <View className="flex-1 flex-col mb-4 px-4 gap-2">
       <View className="flex-row gap-4 rounded-xl bg-secondary p-6 items-center">

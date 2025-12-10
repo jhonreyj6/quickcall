@@ -8,5 +8,6 @@ class UserCreditPayment extends Model
     protected $fillable = [
         'user_id',
         'stripe_payment_intent_id',
+        'amount',
     ];
 }

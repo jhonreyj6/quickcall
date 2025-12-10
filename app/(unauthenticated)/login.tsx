@@ -84,9 +84,9 @@ const Login = () => {
 
         <SocialButton />
 
-        <Link href={"/"} className="text-white">
+        {/* <Link href={"/"} className="text-white">
           Home
-        </Link>
+        </Link> */}
       </View>
     </View>
   );

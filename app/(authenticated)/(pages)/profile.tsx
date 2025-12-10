@@ -3,7 +3,7 @@ import { ApiRequest } from "@/utils/ApiRequest";
 import { default_image } from "@/utils/const";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { useState } from "react";
-import { Image, Modal, Pressable, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Image, Pressable, Text, TextInput, View } from "react-native";
 
 const Profile = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -40,12 +40,12 @@ const Profile = () => {
             <Text className="text-blue-500 text-lg mt-auto">10.00</Text>
           </View>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             className="text-center text-white bg-blue-500 border-0 py-2 px-6 rounded-lg"
             onPress={() => setModalVisible(true)}
           >
             <Text className="text-center text-white text-lg font-semibold">Edit Profile</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         <View className="flex-col gap-4 mb-8">
@@ -73,7 +73,7 @@ const Profile = () => {
         </View>
       </View>
 
-      <Modal
+      {/* <Modal
         animationType="fade"
         transparent={true}
         visible={modalVisible}
@@ -117,7 +117,7 @@ const Profile = () => {
               />
             </View>
 
-            {/* <View className="mb-6">
+            <View className="mb-6">
               <Text className="font-semibold text-white mb-2">Contact:</Text>
               <TextInput
                 placeholder={String(auth.user?.phone_number)}
@@ -126,7 +126,7 @@ const Profile = () => {
                 placeholderClassName="text-gray-500"
                 keyboardType="phone-pad"
               />
-            </View> */}
+            </View>
 
             <View className="flex-col gap-6 items-center justify-between">
               <TouchableOpacity
@@ -144,7 +144,7 @@ const Profile = () => {
             </View>
           </View>
         </View>
-      </Modal>
+      </Modal> */}
     </>
   );
 };

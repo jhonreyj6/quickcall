@@ -18,21 +18,21 @@ class StripeController extends Controller
         $product = CreditPrice::where('package_name', $request->package_name)->firstOrFail();
 
         try {
-            $user          = Auth::user();
+            $user = Auth::user();
             $paymentIntent = PaymentIntent::create([
-                'amount'                    => $product->price,
-                'currency'                  => 'usd',
+                'amount' => $product->price * 100,
+                'currency' => 'usd',
                 'automatic_payment_methods' => [
-                    'enabled'         => true,
+                    'enabled' => true,
                     'allow_redirects' => 'always',
                 ],
-                'metadata'                  => [
+                'metadata' => [
                     'user_id' => $user->id,
                 ],
             ]);
 
             return response()->json([
-                'client_secret'     => $paymentIntent->client_secret,
+                'client_secret' => $paymentIntent->client_secret,
                 'payment_intent_id' => $paymentIntent->id,
             ]);
         } catch (\Exception $e) {
@@ -46,7 +46,7 @@ class StripeController extends Controller
         $paymentIntent = PaymentIntent::retrieve($request->input('payment_intent_id'));
         // for saving pm
         $paymentMethodId = $paymentIntent->payment_method;
-        $paymentMethod   = PaymentMethod::retrieve($paymentMethodId);
+        $paymentMethod = PaymentMethod::retrieve($paymentMethodId);
 
         if ($paymentIntent->status === 'succeeded') {
             $existing = UserCreditPayment::where('stripe_payment_intent_id', $paymentIntent->id)->first();
@@ -55,15 +55,16 @@ class StripeController extends Controller
                 return response()->json(['success' => false, 'messsage' => 'Transaction already exist!'], 409);
             } else {
                 UserCreditPayment::create([
-                    'user_id'                  => $request->user()->id,
+                    'user_id' => $request->user()->id,
                     'stripe_payment_intent_id' => $request->input('payment_intent_id'),
+                    'amount' => $paymentIntent->amount_received / 100,
                 ]);
                 $request->user()->increment('credit_balance', $paymentIntent->amount_received / 100);
 
                 return response()->json([
                     'success' => true,
                     'message' => 'Payment confirmed!',
-                    'user'    => auth()->user(),
+                    'user' => auth()->user(),
                 ],
                     201);
             }

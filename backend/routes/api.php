@@ -19,6 +19,8 @@ Route::group(['prefix' => 'auth', 'namespace' => 'App\Http\Controllers'], functi
 Route::group(['prefix' => 'recent', 'middleware' => ['auth:api'], 'namespace' => 'App\Http\Controllers'], function ($router) {
     Route::get('/', 'RecentController@index');
     // Route::post('/', 'RecentController@store');
+    Route::delete('/', 'RecentController@deleteAll');
+
 });
 
 Route::group(['prefix' => 'contact', 'middleware' => ['auth:api'], 'namespace' => 'App\Http\Controllers'], function ($router) {
@@ -28,7 +30,7 @@ Route::group(['prefix' => 'contact', 'middleware' => ['auth:api'], 'namespace' =
 });
 
 Route::group(['prefix' => 'profile', 'middleware' => ['auth:api'], 'namespace' => 'App\Http\Controllers'], function ($router) {
-    Route::post('/update', 'ProfileController@update');
+    // Route::post('/update', 'ProfileController@update');
 });
 
 Route::group(['prefix' => 'payment/stripe', 'middleware' => ['auth:api'], 'namespace' => 'App\Http\Controllers'], function ($router) {
