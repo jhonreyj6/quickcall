@@ -2,16 +2,18 @@ import ConfirmDialogue from "@/components/ConfirmDialogue";
 import ContactInfoCard from "@/components/ContactInfoCard";
 import NoData from "@/components/NoData";
 import useAuthStore from "@/stores/authStore";
+import useSelectedDataStore from "@/stores/selectedDataStore";
 import { ApiRequest } from "@/utils/ApiRequest";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Audio } from "expo-av";
-import { router } from "expo-router";
-import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, FlatList, Modal, Pressable, ScrollView, Text, View } from "react-native";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ActivityIndicator, FlatList, Modal, Pressable, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 const Dialer = () => {
   const [formDial, setFormDial] = useState<string | null>(null);
   const [recentCalls, setRecentCalls] = useState({ data: [], current_page: 1, last_page: 1 });
+  const selectedDataStore = useSelectedDataStore((state) => state);
 
   // Refs for controlling continuous delete + acceleration
   const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -19,14 +21,27 @@ const Dialer = () => {
   const speedRef = useRef<number>(500); // current delay in ms
   const isPressedRef = useRef<boolean>(false);
   const scrollRef = useRef<ScrollView | null>(null);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [dialerModalVisible, setDialerModalVisible] = useState(false);
   const auth = useAuthStore((state) => state);
   const [recentPaginate, setRecentPaginate] = useState({
     loading: false,
     page: 1,
   });
+  const [pageState, setPageState] = useState(false);
   const [sound, setSound] = useState();
-  const [clearRecentOpenDialogue, setClearRecentOpenDialogue] = useState(false);
+  const [confirmDialogue, setConfirmDialogue] = useState({
+    title: null,
+    message: null,
+    state: false,
+    action: () => {},
+  });
+  const [contactMenu, setContactMenu] = useState({
+    visible: false,
+    position: {
+      x: 0,
+      y: 0,
+    },
+  });
 
   const getRecent = async () => {
     if (recentPaginate.loading) return;
@@ -45,6 +60,7 @@ const Dialer = () => {
     });
 
     if (res.ok) {
+      setPageState(true);
       if (recentPaginate.page == 1) {
         setRecentCalls(res.data);
       } else {
@@ -82,6 +98,41 @@ const Dialer = () => {
     } else {
       alert("Failed to clear recent.");
     }
+  };
+
+  const deleteRecent = async () => {
+    const res = await ApiRequest({
+      method: "DELETE",
+      pathname: "/recent/delete",
+      body: {
+        recent_id: selectedDataStore.data.id,
+      },
+      token: auth.access_token,
+    });
+
+    if (res.ok) {
+      setRecentCalls((prevState) => ({
+        ...prevState,
+        data: prevState.data.filter((data) => {
+          if (data.id != selectedDataStore.data.id) {
+            return data;
+          }
+        }),
+      }));
+    } else {
+      alert("Failed to delete recent.");
+    }
+  };
+
+  const makeCall = async (data) => {
+    const res = await ApiRequest({
+      method: "GET",
+      pathname: "/twilio/call",
+      token: auth.access_token,
+      params: {
+        to: data.phone_number,
+      },
+    });
   };
 
   async function playSound() {
@@ -142,6 +193,20 @@ const Dialer = () => {
     return data.filter((item) => item.call_type === callType).length;
   }
 
+  const getPos = (e, data) => {
+    const { pageX, pageY, locationX, locationY } = e.nativeEvent;
+    selectedDataStore.updateData(data);
+
+    setContactMenu((prevState) => ({
+      ...prevState,
+      visible: true,
+      position: {
+        x: pageX - 100,
+        y: pageY - 20,
+      },
+    }));
+  };
+
   useEffect(() => {
     return sound
       ? () => {
@@ -164,71 +229,97 @@ const Dialer = () => {
     };
   }, []);
 
-  useEffect(() => {
-    getRecent();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      setRecentPaginate((prevState) => ({
+        ...prevState,
+        loading: false,
+        page: 1,
+      }));
+      getRecent();
+
+      return () => {};
+    }, [])
+  );
 
   return (
     <>
-      <View className="flex-1 mx-4">
-        <View className="flex-row justify-between items-center mb-4">
-          <Text className="text-white text-2xl">Recent Calls</Text>
-          <Pressable
-            className="flex-row items-center gap-2 bg-blue-500 py-2 px-4 rounded-lg"
-            onPress={() => {
-              setClearRecentOpenDialogue(true);
-            }}
-          >
-            <FontAwesome6 name="trash" color="white" />
-            <Text className="text-white">Clear All</Text>
-          </Pressable>
+      {pageState && (
+        <View className="flex-1 mx-4">
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-white text-2xl">Recent Calls</Text>
+            {recentCalls.data.length > 0 && (
+              <Pressable
+                className="flex-row items-center gap-2 bg-blue-500 py-1.5 px-4 rounded-lg"
+                onPress={() => {
+                  setConfirmDialogue((prevState) => ({
+                    ...prevState,
+                    state: true,
+                    action: clearRecent,
+                  }));
+                }}
+              >
+                <FontAwesome6 name="trash" color="white" />
+                <Text className="text-white">Clear All</Text>
+              </Pressable>
+            )}
+          </View>
+          <View className="flex-row gap-4 items-center mb-8">
+            <View className="p-4 border bg-sky-950 flex-1 rounded-lg">
+              <Text className="text-lg text-emerald-500">{countByCallType(recentCalls.data, 2)}</Text>
+              <Text className="text-gray-500">Outgoing</Text>
+            </View>
+            <View className="p-4 border bg-sky-950 flex-1 rounded-lg">
+              <Text className="text-blue-500 text-lg">{countByCallType(recentCalls.data, 1)}</Text>
+              <Text className="text-gray-500">Incoming</Text>
+            </View>
+            <View className="p-4 border bg-sky-950 flex-1 rounded-lg">
+              <Text className="text-danger text-lg">{countByCallType(recentCalls.data, 0)}</Text>
+              <Text className="text-gray-500">Missed</Text>
+            </View>
+          </View>
+
+          <FlatList
+            data={recentCalls.data}
+            keyExtractor={(item, index) => index.toString()} // ideally use a unique ID if available
+            renderItem={({ item }) => (
+              <ContactInfoCard
+                caller={item}
+                action={(event) => {
+                  getPos(event, item);
+                }}
+                actionCall={() => {
+                  makeCall(item);
+                }}
+              />
+            )}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 32, flexDirection: "column", gap: 12 }} // pb-8 -> 32px, gap-4 -> 16px
+            onEndReached={getRecent}
+            onEndReachedThreshold={0.15}
+            ListFooterComponent={recentCalls.current_page != recentCalls.last_page ? <ActivityIndicator /> : <NoData />}
+          />
+
+          {dialerModalVisible === false && (
+            <Pressable
+              className="absolute bottom-10 right-0 z-50 p-4 rounded-lg bg-secondary"
+              onPress={() => setDialerModalVisible(true)}
+            >
+              <FontAwesome6 name="minimize" size={32} color="white" />
+            </Pressable>
+          )}
         </View>
-        <View className="flex-row gap-4 items-center mb-8">
-          <View className="p-4 border bg-sky-950 flex-1 rounded-lg">
-            <Text className="text-lg text-emerald-500">{countByCallType(recentCalls.data, 2)}</Text>
-            <Text className="text-gray-500">Outgoing</Text>
-          </View>
-          <View className="p-4 border bg-sky-950 flex-1 rounded-lg">
-            <Text className="text-blue-500 text-lg">{countByCallType(recentCalls.data, 1)}</Text>
-            <Text className="text-gray-500">Incoming</Text>
-          </View>
-          <View className="p-4 border bg-sky-950 flex-1 rounded-lg">
-            <Text className="text-danger text-lg">{countByCallType(recentCalls.data, 0)}</Text>
-            <Text className="text-gray-500">Missed</Text>
-          </View>
-        </View>
-
-        <FlatList
-          data={recentCalls.data}
-          keyExtractor={(item, index) => item.id.toString()} // ideally use a unique ID if available
-          renderItem={({ item }) => <ContactInfoCard caller={item} />}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 32, flexDirection: "column", gap: 12 }} // pb-8 -> 32px, gap-4 -> 16px
-          onEndReached={getRecent}
-          onEndReachedThreshold={0.15}
-          ListFooterComponent={recentCalls.current_page != recentCalls.last_page ? <ActivityIndicator /> : <NoData />}
-        />
-
-        {modalVisible === false && (
-          <Pressable
-            className="absolute bottom-10 right-0 z-50 p-4 rounded-lg bg-secondary"
-            onPress={() => setModalVisible(true)}
-          >
-            <FontAwesome6 name="minimize" size={32} color="white" />
-          </Pressable>
-        )}
-      </View>
-
+      )}
       <Modal
         animationType="none"
         transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
+        visible={dialerModalVisible}
+        onRequestClose={() => setDialerModalVisible(false)}
       >
         <View className="px-4 flex-1 bg-primary">
           <FlatList
             data={recentCalls.data} // your array
-            keyExtractor={(item, index) => index.toString()} // ideally use a unique id if available
+            keyExtractor={(item, index) => item.id} // ideally use a unique id if available
             renderItem={({ item }) => <ContactInfoCard caller={item} />}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ gap: 8, flexDirection: "column", paddingVertical: 8 }} // replace Tailwind gap-2
@@ -425,7 +516,7 @@ const Dialer = () => {
                   <Pressable
                     className="w-full py-4"
                     onPress={(e) => {
-                      setModalVisible(false);
+                      setDialerModalVisible(false);
                     }}
                   >
                     <FontAwesome6 name="minimize" size={32} color="white" className="text-center" />
@@ -437,7 +528,77 @@ const Dialer = () => {
         </View>
       </Modal>
 
-      <ConfirmDialogue state={clearRecentOpenDialogue} setState={setClearRecentOpenDialogue} action={clearRecent} />
+      <Modal
+        animationType="none"
+        transparent={true}
+        visible={contactMenu.visible}
+        onRequestClose={() =>
+          setContactMenu((prevState) => ({
+            ...prevState,
+            visible: false,
+          }))
+        }
+      >
+        <Pressable
+          className="flex-1 bg-transparent"
+          onPress={() =>
+            setContactMenu((prevState) => ({
+              ...prevState,
+              visible: false,
+            }))
+          }
+        >
+          <View
+            className="bg-secondary w-32 absolute rounded-lg"
+            style={{ left: contactMenu.position.x, top: contactMenu.position.y }}
+          >
+            {!selectedDataStore.data?.name && (
+              <TouchableOpacity
+                onPress={() => {
+                  setContactMenu((prevState) => ({
+                    ...prevState,
+                    visible: false,
+                  }));
+                  router.push(`/contact/create`);
+                }}
+                className="py-2.5 px-4 border-b border-gray-500"
+              >
+                <Text className="text-white">Add Contact</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              onPress={() => {}}
+              className="py-2.5 px-4"
+              onPressIn={() => {
+                setContactMenu((prevState) => ({
+                  ...prevState,
+                  visible: false,
+                }));
+                setConfirmDialogue((prevState) => ({
+                  ...prevState,
+                  state: true,
+                  message: "Are you going to delete this call?",
+                  action: deleteRecent,
+                }));
+              }}
+            >
+              <Text className="text-white">Delete</Text>
+            </TouchableOpacity>
+          </View>
+        </Pressable>
+      </Modal>
+
+      <ConfirmDialogue
+        message={confirmDialogue.message}
+        state={confirmDialogue.state}
+        setState={() => {
+          setConfirmDialogue((prevState) => ({
+            ...prevState,
+            state: false,
+          }));
+        }}
+        action={confirmDialogue.action}
+      />
     </>
   );
 };

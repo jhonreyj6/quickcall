@@ -32,8 +32,10 @@ const TabLayout = () => {
     { name: "(pages)/profile", title: "Notification", icon: "", showTab: false },
     { name: "(pages)/notification", title: "Notification", icon: "", showTab: false },
     { name: "(pages)/pricing", title: "Buy Credit", icon: "", showTab: false },
-    { name: "(pages)/payment/checkout", title: "Create Payment", icon: "", showTab: false },
+    { name: "(pages)/payment/checkout", title: "Checkout", icon: "", showTab: false },
     { name: "(pages)/payment/confirm", title: "Confirm Payment", icon: "", showTab: false },
+    { name: "(pages)/contact/create", title: "Create Contact", icon: "", showTab: false },
+    { name: "(pages)/contact/update", title: "Update Contact", icon: "", showTab: false },
   ];
 
   return (

@@ -1,5 +1,4 @@
 import useAuthStore from "@/stores/authStore";
-import { ApiRequest } from "@/utils/ApiRequest";
 import { default_image } from "@/utils/const";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { useState } from "react";
@@ -13,21 +12,21 @@ const Profile = () => {
     email: "",
   });
 
-  const updateProfile = async () => {
-    const res = await ApiRequest({
-      method: "POST",
-      pathname: "/profile/update",
-      token: auth.access_token,
-      body: form,
-    });
+  // const updateProfile = async () => {
+  //   const res = await ApiRequest({
+  //     method: "POST",
+  //     pathname: "/profile/update",
+  //     token: auth.access_token,
+  //     body: form,
+  //   });
 
-    if (res.ok) {
-      auth.updateUser(res.data);
-      setModalVisible(false);
-    } else {
-      alert("Failed to update profile.");
-    }
-  };
+  //   if (res.ok) {
+  //     auth.updateUser(res.data);
+  //     setModalVisible(false);
+  //   } else {
+  //     alert("Failed to update profile.");
+  //   }
+  // };
 
   return (
     <>
