@@ -1,20 +1,9 @@
-import useAuthStore from "@/stores/authStore";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { useIsFocused } from "@react-navigation/native";
-import { Tabs } from "expo-router";
+import { Tabs, usePathname } from "expo-router";
 import React from "react";
 import { View } from "react-native";
 
 const TabIcon = ({ focused, icon }) => {
-  const auth = useAuthStore((state) => state);
-  const isFocused = useIsFocused();
-
-  // useEffect(() => {
-  //   if (isFocused && !auth.isAuthenticated) {
-  //     router.replace("/login");
-  //   }
-  // }, [isFocused, auth]);
-
   return (
     <View className="items-center">
       <FontAwesome6 name={icon} size={24} color={focused ? "white" : "gray"} />
@@ -23,6 +12,7 @@ const TabIcon = ({ focused, icon }) => {
 };
 
 const TabLayout = () => {
+  const pathname = usePathname(); // current path
   const userTabs = [
     { name: "(tabs)/dialer", title: "Dialer", icon: "phone", showTab: true },
     { name: "(tabs)/contact", title: "Contact", icon: "address-book", showTab: true },
@@ -39,57 +29,49 @@ const TabLayout = () => {
     { name: "(pages)/call/ongoing", title: "Ongoing Call", icon: "", showTab: false },
   ];
 
+  const hideTabs = pathname === "/call/ongoing"; // hide tabs only on this path
+
   return (
     <View className="flex-1">
       <Tabs
         screenOptions={{
           tabBarShowLabel: false,
-          tabBarStyle: {
-            borderTopWidth: 1,
-            borderColor: "#334155",
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            zIndex: 50,
-            height: 60,
-            // padding: 24,
-            paddingTop: 10,
-            backgroundColor: "#0f172a",
-          },
+          tabBarStyle: hideTabs
+            ? { display: "none" } // hide tab bar
+            : {
+                borderTopWidth: 1,
+                borderColor: "#334155",
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                zIndex: 50,
+                height: 60,
+                paddingTop: 10,
+                backgroundColor: "#0f172a",
+              },
           sceneStyle: {
-            paddingBottom: 65,
+            paddingBottom: hideTabs ? 0 : 65, // adjust content padding
             backgroundColor: "transparent",
             paddingLeft: 12,
             paddingRight: 12,
           },
+          headerShown: false,
         }}
       >
-        {userTabs.map((tab) => {
-          if (tab.showTab === true) {
-            return (
-              <Tabs.Screen
-                key={tab.name}
-                name={tab.name}
-                options={{
-                  headerShown: false,
-                  tabBarIcon: ({ focused }) => <TabIcon focused={focused} icon={tab.icon} />,
-                }}
-              />
-            );
-          } else {
-            return (
-              <Tabs.Screen
-                name={tab.name}
-                options={{
-                  href: null,
-                  headerShown: false,
-                }}
-                key={tab.name}
-              />
-            );
-          }
-        })}
+        {userTabs.map((tab) => (
+          <Tabs.Screen
+            key={tab.name}
+            name={tab.name}
+            options={
+              tab.showTab
+                ? {
+                    tabBarIcon: ({ focused }) => <TabIcon focused={focused} icon={tab.icon} />,
+                  }
+                : { href: null }
+            }
+          />
+        ))}
       </Tabs>
     </View>
   );
