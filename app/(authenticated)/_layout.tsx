@@ -36,6 +36,7 @@ const TabLayout = () => {
     { name: "(pages)/payment/confirm", title: "Confirm Payment", icon: "", showTab: false },
     { name: "(pages)/contact/create", title: "Create Contact", icon: "", showTab: false },
     { name: "(pages)/contact/update", title: "Update Contact", icon: "", showTab: false },
+    { name: "(pages)/call/ongoing", title: "Ongoing Call", icon: "", showTab: false },
   ];
 
   return (
@@ -43,8 +44,6 @@ const TabLayout = () => {
       <Tabs
         screenOptions={{
           tabBarShowLabel: false,
-          // let the root layout background show through the tab screens
-
           tabBarStyle: {
             borderTopWidth: 1,
             borderColor: "#334155",

@@ -50,6 +50,8 @@ const Contact = () => {
       loading: true,
     }));
 
+    console.log("getting contacts");
+
     const res = await ApiRequest({
       pathname: "/contact",
       token: auth.access_token,
@@ -138,7 +140,12 @@ const Contact = () => {
     if (res.ok) {
       setShowImportedContactDialogue(false);
       setSelectedImportedContact([]);
-      getContacts();
+      console.log(res.data);
+
+      setContacts((prevState) => ({
+        ...prevState,
+        data: [...prevState.data, ...res.data],
+      }));
     } else {
       alert("Failed to import contact!");
     }
@@ -219,11 +226,13 @@ const Contact = () => {
 
   useFocusEffect(
     useCallback(() => {
+      console.log("focus effect");
       setContactPaginate((prevState) => ({
         ...prevState,
-        loading: true,
+        loading: false,
         page: 1,
       }));
+
       getContacts();
 
       return () => {};
@@ -274,7 +283,7 @@ const Contact = () => {
                     }}
                   />
                 )}
-                contentContainerStyle={{ paddingBottom: 32, gap: 12 }}
+                contentContainerStyle={{ gap: 12 }}
                 showsVerticalScrollIndicator={true}
                 onEndReached={getContacts}
                 onEndReachedThreshold={0.15}
@@ -300,7 +309,7 @@ const Contact = () => {
                     }}
                   />
                 )}
-                contentContainerStyle={{ paddingBottom: 32 }}
+                contentContainerStyle={{ flexDirection: "column", gap: 12 }}
                 showsVerticalScrollIndicator={true}
                 ListEmptyComponent={() => <NoData center />}
               />

@@ -125,14 +125,7 @@ const Dialer = () => {
   };
 
   const makeCall = async (data) => {
-    const res = await ApiRequest({
-      method: "GET",
-      pathname: "/twilio/call",
-      token: auth.access_token,
-      params: {
-        to: data.phone_number,
-      },
-    });
+    router.push("/call/ongoing");
   };
 
   async function playSound() {
@@ -145,7 +138,7 @@ const Dialer = () => {
 
   const handlePressIn = () => {
     // remove one digit immediately
-    removeDigit();
+    setFormDial((prev) => (prev && prev.length ? prev.slice(0, -1) : null));
     isPressedRef.current = true;
     // reset speed
     speedRef.current = 300;
@@ -183,10 +176,6 @@ const Dialer = () => {
 
   const setDigit = (digit: string) => {
     setFormDial((prev) => (prev && prev.length ? prev + digit : digit));
-  };
-
-  const removeDigit = () => {
-    setFormDial((prev) => (prev && prev.length ? prev.slice(0, -1) : null));
   };
 
   function countByCallType(data, callType) {
@@ -294,7 +283,7 @@ const Dialer = () => {
               />
             )}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 32, flexDirection: "column", gap: 12 }} // pb-8 -> 32px, gap-4 -> 16px
+            contentContainerStyle={{ flexDirection: "column", gap: 12 }} // pb-8 -> 32px, gap-4 -> 16px
             onEndReached={getRecent}
             onEndReachedThreshold={0.15}
             ListFooterComponent={recentCalls.current_page != recentCalls.last_page ? <ActivityIndicator /> : <NoData />}
@@ -343,14 +332,14 @@ const Dialer = () => {
                   <Text style={{ color: "white", fontSize: 24 }}>{formDial ? formDial : "Type the number"}</Text>
                 </ScrollView>
               </View>
-              <Pressable className="absolute right-8" onPressIn={handlePressIn} onPressOut={handlePressOut}>
+              <TouchableOpacity className="absolute right-8" onPressIn={handlePressIn} onPressOut={handlePressOut}>
                 <FontAwesome6 name="rectangle-xmark" size={32} color="white" />
-              </Pressable>
+              </TouchableOpacity>
             </View>
             <View className="flex-col gap-4">
               <View className="flex-row gap-4">
                 <View className="flex-1 items-center justify-center bg-sky-950 rounded-xl">
-                  <Pressable
+                  <TouchableOpacity
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("1");
@@ -358,10 +347,10 @@ const Dialer = () => {
                     }}
                   >
                     <Text className="text-white text-center text-4xl">1</Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
                 <View className="flex-1 items-center justify-center bg-sky-950 rounded-xl">
-                  <Pressable
+                  <TouchableOpacity
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("2");
@@ -369,10 +358,10 @@ const Dialer = () => {
                     }}
                   >
                     <Text className="text-white text-center text-4xl">2</Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
                 <View className="flex-1 items-center justify-center bg-sky-950 rounded-xl">
-                  <Pressable
+                  <TouchableOpacity
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("3");
@@ -380,12 +369,12 @@ const Dialer = () => {
                     }}
                   >
                     <Text className="text-white text-center text-4xl">3</Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
               </View>
               <View className="flex-row gap-4">
                 <View className="flex-1 items-center justify-center bg-sky-950 rounded-xl">
-                  <Pressable
+                  <TouchableOpacity
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("4");
@@ -393,10 +382,10 @@ const Dialer = () => {
                     }}
                   >
                     <Text className="text-white text-center text-4xl">4</Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
                 <View className="flex-1 items-center justify-center bg-sky-950 rounded-xl">
-                  <Pressable
+                  <TouchableOpacity
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("5");
@@ -404,10 +393,10 @@ const Dialer = () => {
                     }}
                   >
                     <Text className="text-white text-center text-4xl">5</Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
                 <View className="flex-1 items-center justify-center bg-sky-950 rounded-xl">
-                  <Pressable
+                  <TouchableOpacity
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("6");
@@ -415,12 +404,12 @@ const Dialer = () => {
                     }}
                   >
                     <Text className="text-white text-center text-4xl">6</Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
               </View>
               <View className="flex-row gap-4">
                 <View className="flex-1 items-center justify-center bg-sky-950 rounded-xl">
-                  <Pressable
+                  <TouchableOpacity
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("7");
@@ -428,10 +417,10 @@ const Dialer = () => {
                     }}
                   >
                     <Text className="text-white text-center text-4xl">7</Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
                 <View className="flex-1 items-center justify-center bg-sky-950 rounded-xl">
-                  <Pressable
+                  <TouchableOpacity
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("8");
@@ -439,10 +428,10 @@ const Dialer = () => {
                     }}
                   >
                     <Text className="text-white text-center text-4xl">8</Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
                 <View className="flex-1 items-center justify-center bg-sky-950 rounded-xl">
-                  <Pressable
+                  <TouchableOpacity
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("9");
@@ -450,12 +439,12 @@ const Dialer = () => {
                     }}
                   >
                     <Text className="text-white text-center text-4xl">9</Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
               </View>
               <View className="flex-row gap-4">
                 <View className="flex-1 items-center justify-center bg-sky-950 rounded-xl">
-                  <Pressable
+                  <TouchableOpacity
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("*");
@@ -463,10 +452,10 @@ const Dialer = () => {
                     }}
                   >
                     <Text className="text-white text-center text-4xl">*</Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
                 <View className="flex-1 items-center justify-center bg-sky-950 rounded-xl">
-                  <Pressable
+                  <TouchableOpacity
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("0");
@@ -474,10 +463,10 @@ const Dialer = () => {
                     }}
                   >
                     <Text className="text-white text-center text-4xl">0</Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
                 <View className="flex-1 items-center justify-center bg-sky-950 rounded-xl">
-                  <Pressable
+                  <TouchableOpacity
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("#");
@@ -485,12 +474,12 @@ const Dialer = () => {
                     }}
                   >
                     <Text className="text-white text-center text-4xl">#</Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
               </View>
               <View className="flex-row gap-4">
                 <View className="w-24 items-center justify-center bg-sky-950 rounded-xl">
-                  <Pressable
+                  <TouchableOpacity
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("+");
@@ -498,11 +487,11 @@ const Dialer = () => {
                     }}
                   >
                     <Text className="text-white text-center text-4xl">+</Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
 
                 <View className="flex-1 items-center justify-center bg-sky-950 rounded-xl">
-                  <Pressable
+                  <TouchableOpacity
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("*");
@@ -510,7 +499,7 @@ const Dialer = () => {
                     }}
                   >
                     <FontAwesome6 name="phone" size={32} className="text-center !text-emerald-500" />
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
                 <View className="w-24 items-center justify-center bg-sky-950 rounded-xl">
                   <Pressable
