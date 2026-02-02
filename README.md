@@ -4,13 +4,13 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 ## Get started
 
-Here is the app preview:
-<img src="github_images/s7.png" width="300"/>
-<img src="github_images/s8.png" width="300"/>
-<img src="github_images/s1.png" width="300"/>
-<img src="github_images/s3.png" width="300"/>
-<img src="github_images/s4.png" width="300"/>
-<img src="github_images/s6.png" width="300"/>
+<h3>Here is the app preview:</h3>
+<img src="github_images/s7.png" width="250"/>
+<img src="github_images/s8.png" width="250"/>
+<img src="github_images/s1.png" width="250"/>
+<img src="github_images/s3.png" width="250"/>
+<img src="github_images/s4.png" width="250"/>
+<img src="github_images/s6.png" width="250"/>
 
 1. Install dependencies
 
