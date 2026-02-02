@@ -198,7 +198,7 @@ export default function HomeScreen() {
           </View>
         </View> */}
 
-          <View className="flex flex-col gap-4 mt-8">
+          <View className="flex flex-col gap-4 mt-8 mb-16">
             <Link href={"/login"} className="bg-blue-500 text-white text-xl rounded-xl py-3 text-center">
               Login
             </Link>

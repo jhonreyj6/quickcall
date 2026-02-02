@@ -23,7 +23,7 @@ export default function RootLayout() {
               screenOptions={{
                 headerShown: false,
                 contentStyle: {
-                  // backgroundColor: "#020617",
+                  backgroundColor: "#020617",
                   backgroundImage:
                     "radial-gradient(circle farthest-side, rgba(255, 0, 182, .15), hsla(0, 0%, 100%, 0))",
                   // backgroundSize: "2px 11px",

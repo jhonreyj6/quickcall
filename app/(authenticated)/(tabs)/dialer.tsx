@@ -124,7 +124,7 @@ const Dialer = () => {
     }
   };
 
-  const makeCall = async (data) => {
+  const makeCall = async () => {
     router.push("/call/ongoing");
   };
 
@@ -138,6 +138,7 @@ const Dialer = () => {
 
   const handlePressIn = () => {
     // remove one digit immediately
+    playSound();
     setFormDial((prev) => (prev && prev.length ? prev.slice(0, -1) : null));
     isPressedRef.current = true;
     // reset speed
@@ -157,7 +158,7 @@ const Dialer = () => {
 
     // every 500ms while pressed, decrease delay by 100ms until min 100ms
     accelRef.current = setInterval(() => {
-      speedRef.current = Math.max(100, speedRef.current - 100);
+      speedRef.current = Math.max(50, speedRef.current - 500);
     }, 100);
   };
 
@@ -174,8 +175,9 @@ const Dialer = () => {
     }
   };
 
-  const setDigit = (digit: string) => {
-    setFormDial((prev) => (prev && prev.length ? prev + digit : digit));
+  const setDigit = async (digit: string) => {
+    await playSound();
+    await setFormDial((prev) => (prev && prev.length ? prev + digit : digit));
   };
 
   function countByCallType(data, callType) {
@@ -231,6 +233,8 @@ const Dialer = () => {
     }, [])
   );
 
+  let test = null;
+
   return (
     <>
       {pageState && (
@@ -278,7 +282,7 @@ const Dialer = () => {
                   getPos(event, item);
                 }}
                 actionCall={() => {
-                  makeCall(item);
+                  makeCall();
                 }}
               />
             )}
@@ -306,7 +310,7 @@ const Dialer = () => {
         onRequestClose={() => setDialerModalVisible(false)}
       >
         <View className="px-4 flex-1 bg-primary">
-          <FlatList
+          {/* <FlatList
             data={recentCalls.data} // your array
             keyExtractor={(item, index) => item.id} // ideally use a unique id if available
             renderItem={({ item }) => <ContactInfoCard caller={item} />}
@@ -317,9 +321,9 @@ const Dialer = () => {
                 <Text>No recent calls</Text>
               </View>
             )}
-          />
+          /> */}
 
-          <View className="py-4">
+          <View className="py-4 mt-auto">
             <View className="flex-row border rounded-xl bg-sky-950 h-24 items-center justify-center mb-4">
               <View className="w-full px-8 pe-24">
                 <ScrollView
@@ -343,7 +347,6 @@ const Dialer = () => {
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("1");
-                      playSound();
                     }}
                   >
                     <Text className="text-white text-center text-4xl">1</Text>
@@ -354,7 +357,6 @@ const Dialer = () => {
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("2");
-                      playSound();
                     }}
                   >
                     <Text className="text-white text-center text-4xl">2</Text>
@@ -365,7 +367,6 @@ const Dialer = () => {
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("3");
-                      playSound();
                     }}
                   >
                     <Text className="text-white text-center text-4xl">3</Text>
@@ -378,7 +379,6 @@ const Dialer = () => {
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("4");
-                      playSound();
                     }}
                   >
                     <Text className="text-white text-center text-4xl">4</Text>
@@ -389,7 +389,6 @@ const Dialer = () => {
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("5");
-                      playSound();
                     }}
                   >
                     <Text className="text-white text-center text-4xl">5</Text>
@@ -400,7 +399,6 @@ const Dialer = () => {
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("6");
-                      playSound();
                     }}
                   >
                     <Text className="text-white text-center text-4xl">6</Text>
@@ -413,7 +411,6 @@ const Dialer = () => {
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("7");
-                      playSound();
                     }}
                   >
                     <Text className="text-white text-center text-4xl">7</Text>
@@ -424,7 +421,6 @@ const Dialer = () => {
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("8");
-                      playSound();
                     }}
                   >
                     <Text className="text-white text-center text-4xl">8</Text>
@@ -435,7 +431,6 @@ const Dialer = () => {
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("9");
-                      playSound();
                     }}
                   >
                     <Text className="text-white text-center text-4xl">9</Text>
@@ -448,7 +443,6 @@ const Dialer = () => {
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("*");
-                      playSound();
                     }}
                   >
                     <Text className="text-white text-center text-4xl">*</Text>
@@ -459,7 +453,6 @@ const Dialer = () => {
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("0");
-                      playSound();
                     }}
                   >
                     <Text className="text-white text-center text-4xl">0</Text>
@@ -470,7 +463,6 @@ const Dialer = () => {
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("#");
-                      playSound();
                     }}
                   >
                     <Text className="text-white text-center text-4xl">#</Text>
@@ -483,7 +475,6 @@ const Dialer = () => {
                     className="w-full py-4"
                     onPress={(e) => {
                       setDigit("+");
-                      playSound();
                     }}
                   >
                     <Text className="text-white text-center text-4xl">+</Text>
@@ -494,8 +485,7 @@ const Dialer = () => {
                   <TouchableOpacity
                     className="w-full py-4"
                     onPress={(e) => {
-                      setDigit("*");
-                      playSound();
+                      makeCall();
                     }}
                   >
                     <FontAwesome6 name="phone" size={32} className="text-center !text-emerald-500" />
