@@ -6,12 +6,17 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 Here is the app preview:
 
-<img src="github_images/s7.png" width="300"/>
-<img src="github_images/s8.png" width="300"/>
-<img src="github_images/s1.png" width="300"/>
-<img src="github_images/s3.png" width="300"/>
-<img src="github_images/s4.png" width="300"/>
-<img src="github_images/s6.png" width="300"/>
+<div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;">
+
+  <img src="github_images/s7.png" style="width:100%; max-width:300px;">
+  <img src="github_images/s8.png" style="width:100%; max-width:300px;">
+  <img src="github_images/s1.png" style="width:100%; max-width:300px;">
+
+  <img src="github_images/s3.png" style="width:100%; max-width:300px;">
+  <img src="github_images/s4.png" style="width:100%; max-width:300px;">
+  <img src="github_images/s6.png" style="width:100%; max-width:300px;">
+
+</div>
 
 1. Install dependencies
 
