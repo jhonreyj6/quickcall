@@ -6,7 +6,12 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 Here is the app preview:
 
+![App Preview](github_image/s7.png)
+![App Preview](github_image/s8.png)
 ![App Preview](github_image/s1.png)
+![App Preview](github_image/s3.png)
+![App Preview](github_image/s4.png)
+![App Preview](github_image/s6.png)
 
 1. Install dependencies
 
