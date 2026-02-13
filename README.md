@@ -5,17 +5,17 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 ## Get started
 
 <h3>Here is the app preview:</h3>
-<div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:24px;">
+<p align="center">
+  <img src="github_images/s7.png" width="250"/>
+  <img src="github_images/s8.png" width="250"/>
+  <img src="github_images/s1.png" width="250"/>
+</p>
 
-  <img src="github_images/s7.png" style="width:250px; margin-bottom: 20px">
-  <img src="github_images/s8.png" style="width:250px;">
-  <img src="github_images/s1.png" style="width:250px;">
-
-  <img src="github_images/s3.png" style="width:250px;">
-  <img src="github_images/s4.png" style="width:250px;">
-  <img src="github_images/s6.png" style="width:250px;">
-
-</div>
+<p align="center">
+  <img src="github_images/s3.png" width="250"/>
+  <img src="github_images/s4.png" width="250"/>
+  <img src="github_images/s6.png" width="250"/>
+</p>
 
 1. Install dependencies
 
