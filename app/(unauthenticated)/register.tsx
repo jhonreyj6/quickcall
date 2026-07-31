@@ -25,7 +25,7 @@ const Register = () => {
       body: JSON.stringify(form),
     });
 
-    console.log(res);
+    console.log(response);
 
     const data = await response.json();
     if (response.ok) {

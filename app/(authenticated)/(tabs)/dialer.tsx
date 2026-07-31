@@ -130,7 +130,7 @@ const Dialer = () => {
 
   async function playSound() {
     const { sound } = await Audio.Sound.createAsync(
-      require("@/assets/music/buttons/button.mp3") // put sound in your assets folder
+      require("@/assets/music/buttons/button.mp3"), // put sound in your assets folder
     );
     setSound(sound);
     await sound.playAsync();
@@ -230,7 +230,7 @@ const Dialer = () => {
       getRecent();
 
       return () => {};
-    }, [])
+    }, []),
   );
 
   let test = null;

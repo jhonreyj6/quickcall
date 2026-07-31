@@ -8,7 +8,7 @@ export default function RootLayout() {
     <>
       <StripeProvider publishableKey={process.env.EXPO_PUBLIC_STRIPE_PK}>
         <View className="flex-1">
-          <View className="fixed left-0 top-0 -z-10 h-full w-full pt-12">
+          <View className="fixed left-0 top-0 -z-10 h-full w-full">
             <View
               style={{
                 position: "absolute",

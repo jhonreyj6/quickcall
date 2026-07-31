@@ -32,7 +32,7 @@ const TabLayout = () => {
   const hideTabs = pathname === "/call/ongoing"; // hide tabs only on this path
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 pt-12">
       <Tabs
         screenOptions={{
           tabBarShowLabel: false,
